@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.conf import settings
 from django.utils.timezone import now
+from django.core.paginator import Paginator
 from .models import Lead
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -11,16 +12,19 @@ User = get_user_model()
 # agent leads can see only own leads 
 @login_required
 def agent_leads(request):
-    leads = Lead.objects.filter(assigned_agent=request.user)
-    followups = leads.filter(follow_up_at__lte=now(), status="closed")
+    leads_qs = Lead.objects.filter(
+        assigned_agent=request.user
+    ).order_by("-updated_at")
 
-    context = {
-        "page_title": "My Leads",
-        "leads": leads,
-         "followups": followups,
-         }
+    followups = leads_qs.filter(
+        follow_up_at__lte=now()
+    ).exclude(status="closed")
 
-    return render(request,"agents/agents_leads.html",context)
+    paginator = Paginator(leads_qs, 10) 
+    page_number = request.GET.get("page")
+    leads = paginator.get_page(page_number)
+
+    return render(request,"agents/agents_leads.html",{"leads": leads,"followups": followups,})
 
 
 # upate the lead in agent only

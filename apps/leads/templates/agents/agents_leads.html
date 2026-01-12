@@ -3,16 +3,24 @@
 {% block title %}Agent Leads | Realestate{% endblock %}
 
 {% block content %}
+
 {# 🔔 FOLLOW-UP ALERT #}
 {% if followups %}
-<div style="background:#fff7ed;color:#9a3412;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:15px;">
+<div style="
+    background:#fff7ed;
+    color:#9a3412;
+    padding:12px 16px;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-size:15px;
+">
     🔔 You have <strong>{{ followups.count }}</strong> follow-ups due!
 </div>
 {% endif %}
 
 <h2>My Leads</h2>
 
-<table border="1" cellpadding="10">
+<table border="1" cellpadding="10" cellspacing="0" width="100%">
     <thead>
         <tr>
             <th>Sl.No</th>
@@ -27,35 +35,109 @@
     <tbody>
         {% for lead in leads %}
         <tr>
-            <td>{{ forloop.counter }}</td>
+            {# 🔢 GLOBAL SERIAL NUMBER (WORKS WITH PAGINATION) #}
+            <td>{{ leads.start_index|add:forloop.counter0 }}</td>
+
             <td>{{ lead.name }}</td>
             <td>{{ lead.get_status_display }}</td>
             <td>{{ lead.assigned_at|date:"d M Y H:i" }}</td>
             <td>{{ lead.updated_at|date:"d M Y H:i" }}</td>
+
             <td>
-                <a href="{% url 'update_lead_status' lead.id %}"
-                    style="color:green; background:none; border:none; cursor:pointer;">Update</a> |
-                <form method="post" action="{% url 'delete_lead' lead.id %}" style="display:inline;"
-                    onsubmit="return confirm('Delete this lead?');">
-                    {% csrf_token %}
-                    <button type="submit" style="color:red; background:none; border:none; cursor:pointer;">
-                        Delete
-                    </button>
-                </form>|
-                <a href="{% url 'lead_detail' lead.id %}" title="View Details"
-                    style="color:#2563eb; text-decoration:none; margin-right:6px;">
+                <!-- 👁 VIEW DETAILS -->
+                <a href="{% url 'lead_detail' lead.id %}"
+                   title="View Details"
+                   style="color:#2563eb; text-decoration:none;">
                     👁
                 </a>
-            </td>
+                |
 
+                <!-- ✏️ UPDATE -->
+                <a href="{% url 'update_lead_status' lead.id %}"
+                   style="color:green; text-decoration:none;">
+                    Update
+                </a>
+                |
+
+                <!-- 🗑 DELETE -->
+                <form method="post"
+                      action="{% url 'delete_lead' lead.id %}"
+                      style="display:inline;"
+                      onsubmit="return confirm('Delete this lead?');">
+                    {% csrf_token %}
+                    <button type="submit"
+                            style="color:red; background:none; border:none; cursor:pointer;">
+                        Delete
+                    </button>
+                </form>
+            </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="6">No leads available</td>
+            <td colspan="6" style="text-align:center;">
+                No leads available
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
+{# 📄 PAGINATION FOOTER #}
+{% if leads.has_other_pages %}
+<div style="
+    margin-top:20px;
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:6px;
+    font-size:14px;
+">
+
+    {# ← PREVIOUS #}
+    {% if leads.has_previous %}
+        <a href="?page={{ leads.previous_page_number }}"
+           style="padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;text-decoration:none;">
+            ← Prev
+        </a>
+    {% else %}
+        <span style="padding:6px 10px;color:#9ca3af;border:1px solid #e5e7eb;border-radius:6px;">
+            ← Prev
+        </span>
+    {% endif %}
+
+    {# PAGE NUMBERS #}
+    {% for num in leads.paginator.page_range %}
+        {% if leads.number == num %}
+            <span style="
+                padding:6px 10px;
+                background:#4f46e5;
+                color:#ffffff;
+                border-radius:6px;
+                font-weight:500;
+            ">
+                {{ num }}
+            </span>
+        {% else %}
+            <a href="?page={{ num }}"
+               style="padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;text-decoration:none;">
+                {{ num }}
+            </a>
+        {% endif %}
+    {% endfor %}
+
+    {# NEXT → #}
+    {% if leads.has_next %}
+        <a href="?page={{ leads.next_page_number }}"
+           style="padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;text-decoration:none;">
+            Next →
+        </a>
+    {% else %}
+        <span style="padding:6px 10px;color:#9ca3af;border:1px solid #e5e7eb;border-radius:6px;">
+            Next →
+        </span>
+    {% endif %}
+
+</div>
+{% endif %}
 
 {% endblock %}
