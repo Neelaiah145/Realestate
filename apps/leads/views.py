@@ -12,10 +12,13 @@ User = get_user_model()
 @login_required
 def agent_leads(request):
     leads = Lead.objects.filter(assigned_agent=request.user)
+    followups = leads.filter(follow_up_at__lte=now(), status="closed")
 
     context = {
         "page_title": "My Leads",
-        "leads": leads,}
+        "leads": leads,
+         "followups": followups,
+         }
 
     return render(request,"agents/agents_leads.html",context)
 
@@ -23,20 +26,21 @@ def agent_leads(request):
 # upate the lead in agent only
 @login_required
 def update_lead_status(request, lead_id):
-    lead = get_object_or_404(Lead,id=lead_id,assigned_agent=request.user
-    )
+    lead = get_object_or_404(Lead,id=lead_id,assigned_agent=request.user)
 
     if request.method == "POST":
         lead.status = request.POST.get("status")
+        lead.agent_note = request.POST.get("agent_note")
+        follow_up = request.POST.get("follow_up_at")
+
+        if follow_up:
+            lead.follow_up_at = follow_up
+
         lead.save()
         return redirect("agent_leads")
 
-    context = {
-        "page_title": "Update Lead Status",
-        "lead": lead,
-    }
+    return render(request,"agents/update_status.html",{"lead": lead})
 
-    return render(request,"agents/update_status.html",context)
 
 
 
@@ -66,11 +70,7 @@ def submit_lead(request):
 
         agents = User.objects.filter(is_staff=False, is_active=True)
 
-        agent = min(
-            agents,
-            key=lambda a: Lead.objects.filter(assigned_agent=a).count(),
-            default=None
-        )
+        agent = min(agents,key=lambda a: Lead.objects.filter(assigned_agent=a).count(),default=None)
 
         Lead.objects.create(
             name=name,
@@ -83,13 +83,41 @@ def submit_lead(request):
 
         return redirect("lead_success")
 
-    return render(
-        request,
-        "public/submit_lead.html",
-        {"page_title": "Submit Lead"}
-    )
+    return render(request,"public/submit_lead.html",{"page_title": "Submit Lead"})
 
 
 # lead sucess message
 def lead_success(request):
     return render(request,"public/sucess.html",{"page_title": "Success"})
+
+
+
+# delete leads
+@login_required
+def delete_lead(request, lead_id):
+    lead = get_object_or_404(
+        Lead,
+        id=lead_id,
+        assigned_agent=request.user   
+    )
+
+    if request.method == "POST":
+        lead.delete()
+        return redirect("agent_leads")
+    return render(request,"agents/confirm_delete.html",{"lead": lead})
+
+
+
+# agent can see the all details in the user
+@login_required
+def lead_detail(request, lead_id):
+    lead = get_object_or_404(
+        Lead,
+        id=lead_id,
+        assigned_agent=request.user   
+    )
+
+    return render(request,"agents/lead_details.html",{"lead": lead})
+
+
+

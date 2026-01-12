@@ -4,53 +4,55 @@
 
 {% block content %}
 
-<h2>PAGE LOADED</h2>
+
 
 {% if request.user.is_superuser %}
-    <h2>All Leads (Admin)</h2>
+<h2>All Leads (Admin)</h2>
 
-    <table border="1" cellpadding="10" cellspacing="0">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Lead Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Agent</th>
-                <th>Status</th>
-                <th>Assigned At</th>
-                <th>Updated At</th>
-            </tr>
-        </thead>
+<table border="1" cellpadding="10" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Sl.No</th>
+            <th>Customer Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Agent</th>
+            <th>Status</th>
+            <th>Assigned At</th>
+            <th>Updated At</th>
 
-        <tbody>
-            {% for lead in leads %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ lead.name }}</td>
-                <td>{{ lead.email }}</td>
-                <td>{{ lead.phone }}</td>
-                <td>
-                    {% if lead.assigned_agent %}
-                        {{ lead.assigned_agent.username }}
-                    {% else %}
-                        <span>Unassigned</span>
-                    {% endif %}
-                </td>
-                <td>{{ lead.get_status_display }}</td>
-                <td>{{ lead.assigned_at }}</td>
-                <td>{{ lead.updated_at }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="8">No leads found</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for lead in leads %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ lead.name }}</td>
+            <td>{{ lead.email }}</td>
+            <td>{{ lead.phone }}</td>
+            <td>
+                {% if lead.assigned_agent %}
+                {{ lead.assigned_agent.username }}
+                {% else %}
+                <span>Unassigned</span>
+                {% endif %}
+            </td>
+            <td>{{ lead.get_status_display }}</td>
+            <td>{{ lead.assigned_at }}</td>
+            <td>{{ lead.updated_at }}</td>
+
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8">No leads found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% else %}
-    <p>You are not allowed to view this page.</p>
+<p>You are not allowed to view this page.</p>
 {% endif %}
 
 {% endblock %}

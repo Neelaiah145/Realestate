@@ -3,16 +3,23 @@
 {% block title %}Agent Leads | Realestate{% endblock %}
 
 {% block content %}
+{# 🔔 FOLLOW-UP ALERT #}
+{% if followups %}
+<div style="background:#fff7ed;color:#9a3412;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-size:15px;">
+    🔔 You have <strong>{{ followups.count }}</strong> follow-ups due!
+</div>
+{% endif %}
 
 <h2>My Leads</h2>
 
-<table border="1" cellpadding="10" cellspacing="0">
+<table border="1" cellpadding="10">
     <thead>
         <tr>
+            <th>Sl.No</th>
             <th>Name</th>
             <th>Status</th>
-            <th>Assigned</th>
-            <th>Updated</th>
+            <th>Assigned At</th>
+            <th>Updated At</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -20,22 +27,35 @@
     <tbody>
         {% for lead in leads %}
         <tr>
+            <td>{{ forloop.counter }}</td>
             <td>{{ lead.name }}</td>
             <td>{{ lead.get_status_display }}</td>
-            <td>{{ lead.assigned_at }}</td>
-            <td>{{ lead.updated_at }}</td>
+            <td>{{ lead.assigned_at|date:"d M Y H:i" }}</td>
+            <td>{{ lead.updated_at|date:"d M Y H:i" }}</td>
             <td>
-                <a href="{% url 'update_lead_status' lead.id %}">
-                    Update
+                <a href="{% url 'update_lead_status' lead.id %}"
+                    style="color:green; background:none; border:none; cursor:pointer;">Update</a> |
+                <form method="post" action="{% url 'delete_lead' lead.id %}" style="display:inline;"
+                    onsubmit="return confirm('Delete this lead?');">
+                    {% csrf_token %}
+                    <button type="submit" style="color:red; background:none; border:none; cursor:pointer;">
+                        Delete
+                    </button>
+                </form>|
+                <a href="{% url 'lead_detail' lead.id %}" title="View Details"
+                    style="color:#2563eb; text-decoration:none; margin-right:6px;">
+                    👁
                 </a>
             </td>
+
         </tr>
         {% empty %}
         <tr>
-            <td colspan="5">No leads assigned yet.</td>
+            <td colspan="6">No leads available</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 
 {% endblock %}

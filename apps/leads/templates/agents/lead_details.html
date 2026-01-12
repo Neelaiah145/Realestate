@@ -1,0 +1,71 @@
+{% extends "agent_base.html" %}
+
+{% block title %}Lead Details{% endblock %}
+
+{% block content %}
+
+<div style="
+    max-width:700px;
+    margin:20px auto;
+    background:#ffffff;
+    padding:30px;
+    border-radius:14px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.08);
+">
+
+    <h2>Lead Details</h2>
+
+    <table cellpadding="10" style="width:100%; border-collapse:collapse;">
+        <tr>
+            <th align="left">Name</th>
+            <td>{{ lead.name }}</td>
+        </tr>
+        <tr>
+            <th align="left">Email</th>
+            <td>{{ lead.email|default:"—" }}</td>
+        </tr>
+        <tr>
+            <th align="left">Phone</th>
+            <td>{{ lead.phone }}</td>
+        </tr>
+        <tr>
+            <th align="left">Message</th>
+            <td>{{ lead.message|default:"—" }}</td>
+        </tr>
+        <tr>
+            <th align="left">Status</th>
+            <td>{{ lead.get_status_display }}</td>
+        </tr>
+        <tr>
+            <th align="left">Agent Note</th>
+            <td>{{ lead.agent_note|default:"—" }}</td>
+        </tr>
+        <tr>
+            <th align="left">Follow-up At</th>
+            <td>
+                {% if lead.follow_up_at %}
+                {{ lead.follow_up_at|date:"d M Y H:i" }}
+                {% else %}
+                —
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th align="left">Assigned At</th>
+            <td>{{ lead.assigned_at|date:"d M Y H:i" }}</td>
+        </tr>
+        <tr>
+            <th align="left">Last Updated</th>
+            <td>{{ lead.updated_at|date:"d M Y H:i" }}</td>
+        </tr>
+    </table>
+
+    <br>
+
+    <a href="{% url 'agent_leads' %}" style="color:#4f46e5; text-decoration:none;">
+        ← Back to Leads
+    </a>
+
+</div>
+
+{% endblock %}
