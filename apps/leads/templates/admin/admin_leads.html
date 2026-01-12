@@ -1,0 +1,11 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Leads | Realestate{% endblock %}
+
+{% block content %}
+<h2>PAGE LOADED</h2>
+
+{% if request.user.is_superuser %}
+    <h2>admin_leads</h2>
+{% endif %}
+{% endblock %}

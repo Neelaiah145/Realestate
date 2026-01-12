@@ -24,6 +24,8 @@ urlpatterns = [
     path('', lambda request: redirect('accounts/')),
     path('admin/', admin.site.urls),
     path('accounts/', include('apps.accounts.urls')),
+    path('leads/',include('apps.leads.urls')),
+    
 ]
 
 if settings.DEBUG:
