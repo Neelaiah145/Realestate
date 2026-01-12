@@ -1,0 +1,12 @@
+<h2>Update Status</h2>
+
+<form method="post">
+  {% csrf_token %}
+  <select name="status">
+    <option value="new">New</option>
+    <option value="contacted">Contacted</option>
+    <option value="qualified">Qualified</option>
+    <option value="closed">Closed</option>
+  </select>
+  <button type="submit">Save</button>
+</form>

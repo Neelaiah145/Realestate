@@ -1,12 +1,41 @@
+{% extends "agent_base.html" %}
 
-{% extends 'agent_base.html' %}
-
-{% block title %}agent_leads | Realestate{% endblock %}
+{% block title %}Agent Leads | Realestate{% endblock %}
 
 {% block content %}
 
-<h2>Agent _Leads</h2>
+<h2>My Leads</h2>
 
+<table border="1" cellpadding="10" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Assigned</th>
+            <th>Updated</th>
+            <th>Action</th>
+        </tr>
+    </thead>
 
+    <tbody>
+        {% for lead in leads %}
+        <tr>
+            <td>{{ lead.name }}</td>
+            <td>{{ lead.get_status_display }}</td>
+            <td>{{ lead.assigned_at }}</td>
+            <td>{{ lead.updated_at }}</td>
+            <td>
+                <a href="{% url 'update_lead_status' lead.id %}">
+                    Update
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No leads assigned yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}
