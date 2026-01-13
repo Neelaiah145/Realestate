@@ -1,78 +1,11 @@
 {% extends "agent_base.html" %}
+{% load static %}
+
+{% block title %}Update Lead{% endblock %}
 
 {% block content %}
 
-<style>
-    .status-wrapper {
-        min-height: 70vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .status-card {
-        background: #ffffff;
-        width: 100%;
-        max-width: 420px;
-        padding: 30px;
-        border-radius: 14px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-    }
-
-    .status-card h2 {
-        text-align: center;
-        margin-bottom: 25px;
-        color: #111827;
-    }
-
-    .status-card label {
-        display: block;
-        font-size: 14px;
-        font-weight: 500;
-        margin-bottom: 6px;
-        color: #374151;
-    }
-
-    .status-card select,
-    .status-card textarea,
-    .status-card input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 10px;
-        border: 1px solid #d1d5db;
-        font-size: 15px;
-        margin-bottom: 18px;
-        outline: none;
-    }
-
-    .status-card textarea {
-        resize: vertical;
-        min-height: 90px;
-    }
-
-    .status-card select:focus,
-    .status-card textarea:focus,
-    .status-card input:focus {
-        border-color: #4f46e5;
-    }
-
-    .status-card button {
-        width: 100%;
-        padding: 12px;
-        background: #4f46e5;
-        color: #ffffff;
-        border: none;
-        border-radius: 10px;
-        font-size: 15px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
-
-    .status-card button:hover {
-        background: #4338ca;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'leads/style.css' %}">
 
 <div class="status-wrapper">
     <div class="status-card">
@@ -81,6 +14,7 @@
         <form method="post">
             {% csrf_token %}
 
+            <!-- STATUS -->
             <label>Status</label>
             <select name="status">
                 <option value="new" {% if lead.status == "new" %}selected{% endif %}>New</option>
@@ -89,18 +23,25 @@
                 <option value="closed" {% if lead.status == "closed" %}selected{% endif %}>Closed</option>
             </select>
 
-            <label>Agent Note</label>
-            <textarea name="agent_note"
-                      placeholder="Example: Client asked to call next week">
-                {{ lead.agent_note }}
-            </textarea>
+            <!-- AGENT NOTE -->
+<label>Agent Note</label>
+<textarea name="agent_note" placeholder="Example: Client asked to call next week">{{ lead.agent_note|default_if_none:'' }}</textarea>
 
+
+
+
+            <!-- FOLLOW-UP TIME -->
             <label>Follow-up Date & Time</label>
             <input type="datetime-local"
                    name="follow_up_at"
-                   value="{{ lead.follow_up_at|date:'Y-m-d\\TH:i' }}">
+                   value="{% if lead.follow_up_at %}{{ lead.follow_up_at|date:'Y-m-d\\TH:i' }}{% endif %}">
+<div class="form-actions">
+    <button type="submit" class="save-btn">Save</button>
 
-            <button type="submit">Save</button>
+    <a href="{% url 'agent_leads' %}" class="cancel-btn">
+        Cancel & Go Back
+    </a>
+</div>
         </form>
     </div>
 </div>
