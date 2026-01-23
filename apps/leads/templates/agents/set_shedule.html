@@ -1,0 +1,34 @@
+{% extends "agent_base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'leads/style.css' %}">
+
+<div class="followup-wrapper">
+
+    <h3 class="page-title">
+        Schedule Property Visit  <span> {{ lead.name }}</span>
+    </h3>
+
+    <div class="followup-card">
+        <form method="post">
+            {% csrf_token %}
+
+            <label for="follow_up_at">Follow-up Date & Time</label>
+            <input type="datetime-local" id="follow_up_at" name="follow_up_at" required>
+
+            <!-- Buttons -->
+            <div class="button-row">
+                <a href="javascript:history.back()" class="btn btn-outline">
+                   ◀ Back
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    Save Schedule
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+{% endblock %}

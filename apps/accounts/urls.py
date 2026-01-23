@@ -10,6 +10,8 @@ urlpatterns = [
     path("user/status/<int:user_id>/", toggle_user_status, name="toggle-user"),
     path("user/delete/<int:user_id>/", delete_user, name="delete-user"),
     path('agents/agent_dashboard/',agent_dashboard_view,name='agent_dashboard'),
+
+    
     
     
 ]

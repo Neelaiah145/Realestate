@@ -162,3 +162,6 @@ def base(request):
 # def login_view(request):
 #     print("hai")
 #     return render(request,'accounts/login.html')
+
+
+

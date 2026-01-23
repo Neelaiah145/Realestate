@@ -1,0 +1,51 @@
+{% extends "admin_base.html" %}
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'leads/style.css' %}">
+
+
+{% block content %}
+<h2 class="perm-title">{{ page_title }}</h2>
+
+<div class="perm-container">
+
+    <form method="GET" class="perm-agent-form">
+        <label class="perm-label">Select Agent</label>
+        <select name="agent" onchange="this.form.submit()" class="perm-agent-select">
+            <option value="">Select Agent --</option>
+            {% for agent in agents %}
+            <option value="{{ agent.id }}">{{ agent.username }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <hr>
+
+    {% if selected_agent %}
+    <h3>Permissions for {{ selected_agent.username }}</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="agent_id" value="{{ selected_agent.id }}">
+
+        <div class="perm-grid">
+            {% for perm in permissions %}
+            <label class="perm-item">
+                <input type="checkbox"
+                       name="permissions"
+                       value="{{ perm.id }}"
+                       {% if perm.id in user_permissions %}checked{% endif %}>
+                {{ perm.name }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <button class="perm-save-btn">Save Permissions</button>
+    </form>
+    {% else %}
+    <p class="perm-empty">Select an agent to manage permissions.</p>
+    {% endif %}
+
+</div>
+{% endblock %}

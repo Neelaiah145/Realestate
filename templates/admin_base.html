@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>Realestate Dashboard</title>
     <link rel="icon" type="image/png" href="{% static 'dash/assets/images/icons/nav_img.png' %}">
-    
+
     <script src="{% static 'dash/assets/script/unpkg.com/lucide%400.562.0/dist/umd/lucide.js' %}"></script>
     <script src="{% static 'dash/assets/script/cdn.jsdelivr.net/npm/chart.js' %}"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -31,8 +31,9 @@
                     <div class="w-10 h-10 relative overflow-hidden"><img
                             src="{% static 'dash/assets/images/icons/nav_img.png' %}" alt="pageLogo"
                             class="h-full w-full object-cover" /></div>
-                    <div class="flex flex-col"><a href="#" class="text-xl font-bold text-text no-underline">Realestate</a>
-                        <p class="text-xs text-muted">Payment Dashboard</p>
+                    <div class="flex flex-col"><a href="#"
+                            class="text-xl font-bold text-text no-underline">Realestate</a>
+                        <p class="text-xs text-muted">Dashboard</p>
                     </div>
                 </div>
                 <div class="customXl:hidden"><button id="sidebarClose"><i data-lucide="x"></i></button></div>
@@ -106,59 +107,59 @@
                     </li>
 
                     <li>
-                        <a href="#" class="nav-item">
+                        <a href="{% url 'manage_permissions' user.id %}" class="nav-item">
                             <i data-lucide="user-plus"></i>
-                            <span>New Customer</span>
+                            <span> Permissions</span>
                         </a>
-                    </li>
+                    </li> 
 
                     <!-- ACCOUNT RECEIVABLES -->
-                    <li class="nav-group-title">ACCOUNT RECEIVABLES</li>
+                    <!-- <li class="nav-group-title">ACCOUNT RECEIVABLES</li>
 
                     <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="file-text"></i>
                             <span>Invoices</span>
                         </a>
-                    </li>
+                    </li> -->
 
-                    <li>
+                    <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="package"></i>
                             <span>Products</span>
                         </a>
-                    </li>
+                    </li> -->
 
-                    <li>
+                    <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="receipt"></i>
                             <span>Billings</span>
                         </a>
-                    </li>
+                    </li> -->
 
                     <!-- OTHERS -->
-                    <li class="nav-group-title">OTHERS</li>
+                    <!-- <li class="nav-group-title">OTHERS</li>
 
                     <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="globe"></i>
                             <span>Connections</span>
                         </a>
-                    </li>
+                    </li> -->
 
-                    <li>
+                    <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="users-2"></i>
                             <span>People</span>
                         </a>
-                    </li>
+                    </li> -->
 
-                    <li>
+                    <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="settings"></i>
                             <span>Settings</span>
                         </a>
-                    </li>
+                    </li> -->
 
                 </ul>
             </nav>
@@ -183,7 +184,7 @@
                                 {{ page_title|default:"Dashboard" }}
                             </h2>
                             <p class="text-xs sm:text-sm text-muted truncate max-w-[120px] sm:max-w-40]">
-                                Monitor finances
+                                Online Booking
                             </p>
                         </div>
                     </div>

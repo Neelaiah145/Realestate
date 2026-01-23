@@ -28,6 +28,7 @@ SECRET_KEY = 'django-insecure-leldm32w=u@4^h-z5(87*k6bihj--%pi1#ki$8iy821nfu#i9x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# used for ip's
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -49,11 +50,18 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # middleware path
+    'realestate.middleware.DisableCacheForAuthenticatedUsersMiddleware',
+    
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+  
+    
+
+
 ]
 
 ROOT_URLCONF = 'realestate.urls'
@@ -110,6 +118,15 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',  # Primary
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]
+
 
 
 # Internationalization

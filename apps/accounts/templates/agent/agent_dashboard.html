@@ -1,12 +1,33 @@
+{% extends "agent_base.html" %}
+{% load static %}
 
-{% extends 'agent_base.html' %}
-
-{% block title %}Dashboard | Realestate{% endblock %}
+{% block title %}Agent Dashboard{% endblock %}
 
 {% block content %}
 
-<h2>Agent _dashboard</h2>
+<style>
+/* ===== Dashboard Header ===== */
+.page-header {
+    font-size: 26px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 24px;
+}
 
+.page-header span {
+    color: #3760ba;
+}
 
+/* ===== Layout spacing ===== */
+.dashboard-container {
+    padding: 10px 0;
+}
+</style>
+
+<div class="dashboard-container">
+    <h2 class="page-header">
+        Welcome <span>{{ request.user.username }}</span>
+    </h2>
+</div>
 
 {% endblock %}

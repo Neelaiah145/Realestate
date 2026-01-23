@@ -6,23 +6,24 @@
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'leads/style.css' %}">
-{# 🔔 DUE FOLLOW-UPS #}
+
+<!-- due follow-ups -->
 {% if followups %}
 <div class="followup-box followup-due">
     <div class="followup-title">
-        🔔 {{ followups.count }} follow-ups due
+        📢 {{ followups.count }} follow-ups due
     </div>
     <div class="followup-list">
         {% for lead in followups %}
-            <strong>{{ lead.name }}</strong>
-            ({{ lead.follow_up_at|date:"d M H:i" }})
-            {% if not forloop.last %}, {% endif %}
+        <strong>{{ lead.name }}</strong>
+        ({{ lead.follow_up_at|date:"d M Y, h:i A" }})
+        {% if not forloop.last %}, {% endif %}
         {% endfor %}
     </div>
 </div>
 {% endif %}
 
-{# ⏳ UPCOMING FOLLOW-UPS #}
+<!-- upcomming followups -->
 {% if upcoming_followups %}
 <div class="followup-box followup-upcoming">
     <div class="followup-title">
@@ -30,9 +31,9 @@
     </div>
     <div class="followup-list">
         {% for lead in upcoming_followups %}
-            <strong>{{ lead.name }}</strong>
-            ({{ lead.follow_up_at|date:"d M H:i" }})
-            {% if not forloop.last %}, {% endif %}
+        <strong>{{ lead.name }}</strong>
+        ({{ lead.follow_up_at|date:"d M Y, h:i A" }})
+        {% if not forloop.last %}, {% endif %}
         {% endfor %}
     </div>
 </div>
@@ -44,47 +45,78 @@
 </h2>
 
 <form method="get" class="search-form">
-    <input type="text" name="q" value="{{ search_query }}"
-           placeholder="Search lead by name"
-           class="search-input">
-    <button type="submit" class="search-btn"> Search</button>
+    <input type="text" name="q" value="{{ search_query }}" placeholder="Search Lead by Name" class="search-input">
+    <button type="submit" class="search-btn">Search</button>
+
     {% if search_query %}
-        <a href="{% url 'agent_leads' %}" class="search-clear">Clear</a>
+    <a href="{% url 'agent_leads' %}" class="search-clear">Clear</a>
     {% endif %}
 </form>
 
 <table class="leads-table">
     <thead>
         <tr>
-            <th>Sl.No</th>
+            <th>SL.NO</th>
             <th>Name</th>
             <th>Status</th>
             <th>Assigned At</th>
             <th>Updated At</th>
+            <th>Site Visit Schedule</th>
             <th>Action</th>
         </tr>
     </thead>
+
     <tbody>
         {% for lead in leads %}
         <tr class="{% if lead.is_due %}lead-due-row{% endif %}">
             <td>{{ leads.start_index|add:forloop.counter0 }}</td>
             <td>{{ lead.name }}</td>
             <td>{{ lead.get_status_display }}</td>
-            <td>{{ lead.assigned_at|date:"d M Y H:i" }}</td>
-            <td>{{ lead.updated_at|date:"d M Y H:i" }}</td>
+            <td>{{ lead.assigned_at|date:"d M Y - h:i A" }}</td>
+            <td>{{ lead.updated_at|date:"d M Y - h:i A" }}</td>
+
+            <!-- visiting schedule -->
+            <td style="text-align:center;">
+                {% if lead.site_visit_at %}
+                <a href="{% url 'set_shedule' lead.id %}" class="action-link site-visit-done"
+                    title="Reschedule Site Visit">
+                    Site Visit Scheduled
+                </a>
+                {% else %}
+                <a href="{% url 'set_shedule' lead.id %}" class="action-link site-visit-pending"
+                    title="Schedule Site Visit">
+                    Site Visit Schedule
+                </a>
+                {% endif %}
+            </td>
+
+            <!-- lead details/update/delete -->
             <td>
-                <a href="{% url 'lead_detail' lead.id %}" class="action-link">👁</a> |
-                <a href="{% url 'update_lead_status' lead.id %}" class="action-link">Update</a> |
-                <form method="post" action="{% url 'delete_lead' lead.id %}"
-                      style="display:inline;" onsubmit="return confirm('Delete this lead?');">
+                <a href="{% url 'lead_detail' lead.id %}" class="action-link" title="View">👁</a> |
+
+                {% if perms.leads.can_update_lead %}
+                <a href="{% url 'update_lead_status' lead.id %}" class="action-link" title="Update">Update</a> |
+                {% endif %}
+
+                {% if perms.leads.can_book_lead %}
+                <a href="#" class="action-link booking-link" title="Booking">Booking</a> |
+                {% endif %}
+
+                {% if perms.leads.can_delete_lead %}
+                <form method="post" action="{% url 'delete_lead' lead.id %}" style="display:inline;"
+                    onsubmit="return confirm('Delete this lead?');">
                     {% csrf_token %}
-                    <button type="submit" class="delete-btn">Delete</button>
+                    <button type="submit" class="delete-btn" title="Delete">
+                        Delete
+                    </button>
                 </form>
+                {% endif %}
             </td>
         </tr>
+
         {% empty %}
         <tr>
-            <td colspan="6" style="text-align:center;color:#6b7280;">
+            <td colspan="7" style="text-align:center;color:#6b7280;">
                 No leads available
             </td>
         </tr>
@@ -92,15 +124,17 @@
     </tbody>
 </table>
 
+<!-- set other page/search bar  -->
 {% if leads.has_other_pages %}
 <div class="pagination">
     {% for num in leads.paginator.page_range %}
-        {% if leads.number == num %}
-            <span class="page-active">{{ num }}</span>
-        {% else %}
-            <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}"
-               class="page-link">{{ num }}</a>
-        {% endif %}
+    {% if leads.number == num %}
+    <span class="page-active">{{ num }}</span>
+    {% else %}
+    <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}" class="page-link">
+        {{ num }}
+    </a>
+    {% endif %}
     {% endfor %}
 </div>
 {% endif %}
