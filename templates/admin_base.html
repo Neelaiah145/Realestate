@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <title>Realestate Dashboard</title>
     <link rel="icon" type="image/png" href="{% static 'dash/assets/images/icons/nav_img.png' %}">
-    
+
     <script src="{% static 'dash/assets/script/unpkg.com/lucide%400.562.0/dist/umd/lucide.js' %}"></script>
     <script src="{% static 'dash/assets/script/cdn.jsdelivr.net/npm/chart.js' %}"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -31,7 +31,8 @@
                     <div class="w-10 h-10 relative overflow-hidden"><img
                             src="{% static 'dash/assets/images/icons/nav_img.png' %}" alt="pageLogo"
                             class="h-full w-full object-cover" /></div>
-                    <div class="flex flex-col"><a href="#" class="text-xl font-bold text-text no-underline">Realestate</a>
+                    <div class="flex flex-col"><a href="#"
+                            class="text-xl font-bold text-text no-underline">Realestate</a>
                         <p class="text-xs text-muted">Payment Dashboard</p>
                     </div>
                 </div>
@@ -56,6 +57,49 @@
                             <span>Analytics</span>
                         </a>
                     </li>
+
+
+
+                    <li class="nav-dropdown">
+                        <button class="nav-item w-full flex items-center justify-between"
+                            onclick="toggleDropdown(this)">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="layers"></i>
+                                <span>Propertys</span>
+                            </div>
+                            <i data-lucide="chevron-down" class="dropdown-icon transition-transform"></i>
+                        </button>
+                        <ul class="nav-dropdown-menu hidden pl-11 mt-1 space-y-1">
+                            <li>
+                                <a href="{% url 'add_property' %}"
+                                    class="block py-2 text-sm text-muted hover:text-primary">
+                                    Add Property
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'property_list' %}"
+                                    class="block py-2 text-sm text-muted hover:text-primary">
+                                    Property List
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'property_details' %}"
+                                    class="block py-2 text-sm text-muted hover:text-primary">
+                                    Property Details
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <script>
+                        function toggleDropdown(button) {
+                            const menu = button.nextElementSibling;
+                            const icon = button.querySelector('.dropdown-icon');
+
+                            menu.classList.toggle('hidden');
+                            icon.style.transform = menu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+                        }
+                    </script>
 
                     <li>
                         <a href="#" class="nav-item">
@@ -113,51 +157,47 @@
                     </li>
 
                     <!-- ACCOUNT RECEIVABLES -->
-                    <li class="nav-group-title">ACCOUNT RECEIVABLES</li>
+                    <!-- <li class="nav-group-title">ACCOUNT RECEIVABLES</li> -->
 
-                    <li>
+                    <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="file-text"></i>
                             <span>Invoices</span>
                         </a>
-                    </li>
+                    </li> -->
 
-                    <li>
-                        <a href="#" class="nav-item">
-                            <i data-lucide="package"></i>
-                            <span>Products</span>
-                        </a>
-                    </li>
+                    <!-- Property Dropdown -->
 
-                    <li>
+
+                    <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="receipt"></i>
                             <span>Billings</span>
                         </a>
-                    </li>
+                    </li> -->
 
                     <!-- OTHERS -->
-                    <li class="nav-group-title">OTHERS</li>
+                    <!-- <li class="nav-group-title">OTHERS</li> -->
 
                     <li>
-                        <a href="#" class="nav-item">
+                        <!-- <a href="#" class="nav-item">
                             <i data-lucide="globe"></i>
                             <span>Connections</span>
-                        </a>
+                        </a> -->
                     </li>
 
                     <li>
-                        <a href="#" class="nav-item">
+                        <!-- <a href="#" class="nav-item">
                             <i data-lucide="users-2"></i>
                             <span>People</span>
-                        </a>
+                        </a> -->
                     </li>
 
                     <li>
-                        <a href="#" class="nav-item">
+                        <!-- <a href="#" class="nav-item">
                             <i data-lucide="settings"></i>
                             <span>Settings</span>
-                        </a>
+                        </a> -->
                     </li>
 
                 </ul>
@@ -358,6 +398,5 @@
     <script src="{% static 'dash/assets/script/cdn.jsdelivr.net/npm/xlsx%400.18.5/dist/xlsx.full.min.js' %}"></script>
     <script defer="defer" src="{% static 'dash/assets/script/app.js' %}"></script>
 </body>
-
 
 </html>

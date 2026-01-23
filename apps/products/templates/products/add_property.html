@@ -1,0 +1,268 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-6 text-sm" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-2">
+            <li>
+                <a href="{% url 'property_list' %}" class="text-primary hover:text-primary/80">Property</a>
+            </li>
+            <li>
+                <span class="text-muted">/</span>
+            </li>
+            <li>
+                <span class="text-muted">{% if property %}Edit{% else %}Add{% endif %} Property</span>
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Page Title -->
+    <h1 class="text-2xl font-bold text-text mb-8">{% if property %}Edit{% else %}Add{% endif %} Property</h1>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+        <div class="px-4 py-3 rounded-xl {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %} mb-2">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Form -->
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Row 1: Property Type, Property Status, Property Price -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Property Type -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Property Type <span class="text-red-500">*</span></label>
+                <input type="text" name="property_type" placeholder="office,villa,apartment" 
+                    value="{{ property.property_type|default:'' }}"
+                    required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+
+            <!-- Property Status -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Property Status <span class="text-red-500">*</span></label>
+                <select name="property_status" required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option value="for_rent" {% if property.property_status == 'for_rent' %}selected{% endif %}>For Rent</option>
+                    <option value="for_sale" {% if property.property_status == 'for_sale' %}selected{% endif %}>For Sale</option>
+                    <option value="sold" {% if property.property_status == 'sold' %}selected{% endif %}>Sold</option>
+                </select>
+            </div>
+
+            <!-- Property Price -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Property Price <span class="text-red-500">*</span></label>
+                <input type="number" name="property_price" placeholder="2800" 
+                    value="{{ property.property_price|default:'' }}"
+                    step="0.01" required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+        </div>
+
+        <!-- Row 2: Max Rooms, Beds, Baths -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Max Rooms -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Max Rooms <span class="text-red-500">*</span></label>
+                <select name="max_rooms" required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+                    {% for i in "123456" %}
+                    <option value="{{ i }}" {% if property.max_rooms|stringformat:"i" == i %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                    <option value="7" {% if property.max_rooms > 6 %}selected{% endif %}>6+</option>
+                </select>
+            </div>
+
+            <!-- Beds -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Beds <span class="text-red-500">*</span></label>
+                <select name="beds" required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+                    {% for i in "123456" %}
+                    <option value="{{ i }}" {% if property.beds|stringformat:"i" == i %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                    <option value="7" {% if property.beds > 6 %}selected{% endif %}>6+</option>
+                </select>
+            </div>
+
+            <!-- Baths -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Baths <span class="text-red-500">*</span></label>
+                <select name="baths" required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+                    {% for i in "123456" %}
+                    <option value="{{ i }}" {% if property.baths|stringformat:"i" == i %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                    <option value="7" {% if property.baths > 6 %}selected{% endif %}>6+</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Row 3: Area, Price, Premiere -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Area -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Area <span class="text-red-500">*</span></label>
+                <input type="text" name="area" placeholder="85 sq ft" 
+                    value="{{ property.area|default:'' }}"
+                    required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+
+            <!-- Price (Secondary) -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Secondary Price</label>
+                <input type="number" name="price" placeholder="3000" 
+                    value="{{ property.price|default:'' }}"
+                    step="0.01"
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+
+            <!-- Premiere -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Premiere <span class="text-red-500">*</span></label>
+                <select name="premiere" required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option value="Blue Sky" {% if property.premiere == 'Blue Sky' %}selected{% endif %}>Blue Sky</option>
+                    <option value="Green Valley" {% if property.premiere == 'Green Valley' %}selected{% endif %}>Green Valley</option>
+                    <option value="Mountain View" {% if property.premiere == 'Mountain View' %}selected{% endif %}>Mountain View</option>
+                    <option value="Sunset Hills" {% if property.premiere == 'Sunset Hills' %}selected{% endif %}>Sunset Hills</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label class="block text-sm font-medium text-text mb-2">Description</label>
+            <textarea name="description" rows="4" 
+                class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary resize-none">{{ property.description|default:'' }}</textarea>
+        </div>
+
+        <!-- Row 4: Address, Zip Code -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Address -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Address <span class="text-red-500">*</span></label>
+                <input type="text" name="address" placeholder="Address of your property" 
+                    value="{{ property.address|default:'' }}"
+                    required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+
+            <!-- Zip Code -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Zip Code <span class="text-red-500">*</span></label>
+                <input type="text" name="zip_code" placeholder="Enter pin code" 
+                    value="{{ property.zip_code|default:'' }}"
+                    required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+        </div>
+
+        <!-- City, State, Country -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- City -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">City <span class="text-red-500">*</span></label>
+                <input type="text" name="city" placeholder="Enter city" 
+                    value="{{ property.city|default:'' }}"
+                    required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+
+            <!-- State -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">State <span class="text-red-500">*</span></label>
+                <input type="text" name="state" placeholder="Enter state" 
+                    value="{{ property.state|default:'' }}"
+                    required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+
+            <!-- Country -->
+            <div>
+                <label class="block text-sm font-medium text-text mb-2">Country <span class="text-red-500">*</span></label>
+                <input type="text" name="country" placeholder="Enter country" 
+                    value="{{ property.country|default:'' }}"
+                    required
+                    class="w-full px-4 py-3 border border-border rounded-xl bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
+            </div>
+        </div>
+
+        <!-- Property Images -->
+        <div>
+            <label class="block text-sm font-medium text-text mb-2">Property Images {% if not property %}<span class="text-red-500">*</span>{% endif %}</label>
+            
+            <!-- Existing Images Preview (for edit mode) -->
+            {% if property and property.images.all %}
+            <div class="mb-4">
+                <p class="text-sm text-muted mb-2">Existing Images:</p>
+                <div class="grid grid-cols-4 gap-4">
+                    {% for image in property.images.all %}
+                    <div class="relative">
+                        <img src="{{ image.image.url }}" alt="Property" class="w-full h-24 object-cover rounded-lg">
+                        {% if image.is_primary %}
+                        <span class="absolute top-1 right-1 bg-primary text-white text-xs px-2 py-1 rounded">Primary</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Upload New Images -->
+            <div class="border-2 border-dashed border-border rounded-xl p-8 text-center">
+                <input type="file" name="property_images" multiple accept="image/*" id="property-images" class="hidden" {% if not property %}required{% endif %}>
+                <label for="property-images" class="cursor-pointer">
+                    <div class="flex flex-col items-center">
+                        <i data-lucide="upload" class="w-12 h-12 text-muted mb-2"></i>
+                        <p class="text-text font-medium">Click to upload {% if property %}new {% endif %}images</p>
+                        <p class="text-sm text-muted">or drag and drop</p>
+                        <p class="text-xs text-muted mt-2">PNG, JPG, JPEG up to 10MB</p>
+                    </div>
+                </label>
+                <div id="file-list" class="mt-4 text-left"></div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end gap-4">
+            <a href="{% url 'property_list' %}" class="px-6 py-3 border border-border rounded-xl text-text hover:bg-panel transition-colors">
+                Cancel
+            </a>
+            <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors">
+                {% if property %}Update{% else %}Add{% endif %} Property
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    // File upload preview
+    document.getElementById('property-images').addEventListener('change', function(e) {
+        const fileList = document.getElementById('file-list');
+        fileList.innerHTML = '';
+        
+        if (this.files.length > 0) {
+            fileList.innerHTML = '<p class="text-sm text-text font-medium mb-2">Selected files:</p>';
+            Array.from(this.files).forEach(file => {
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'text-sm text-muted';
+                fileDiv.textContent = `• ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                fileList.appendChild(fileDiv);
+            });
+        }
+    });
+</script>
+{% endblock %}
