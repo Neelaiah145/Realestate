@@ -1,0 +1,66 @@
+{% extends "agent_base.html" %}
+{% load static %}
+
+{% block title %}Lead Details{% endblock %}
+
+{% block content %}
+
+
+<link rel="stylesheet" href="{% static 'leads/style.css' %}">
+
+<div class="lead-detail-wrapper">
+
+    <h2>Lead Details</h2>
+
+    <table class="lead-detail-table">
+        <tr>
+            <th>Name</th>
+            <td>{{ lead.name }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ lead.email|default:"NA" }}</td>
+        </tr>
+        <tr>
+            <th>Phone</th>
+            <td>{{ lead.phone }}</td>
+        </tr>
+        <tr>
+            <th>Message</th>
+            <td>{{ lead.message|default:"NA" }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ lead.get_status_display }}</td>
+        </tr>
+        <tr>
+            <th>Agent Note</th>
+            <td>{{ lead.agent_note|default:"NA" }}</td>
+        </tr>
+        <tr>
+            <th>Follow-up At</th>
+            <td>
+                {% if lead.follow_up_at %}
+                    {{ lead.follow_up_at|date:"d M Y H:i" }}
+                {% else %}
+                    NA
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Assigned At</th>
+            <td>{{ lead.assigned_at|date:"d M Y H:i" }}</td>
+        </tr>
+        <tr>
+            <th>Last Updated</th>
+            <td>{{ lead.updated_at|date:"d M Y H:i" }}</td>
+        </tr>
+    </table>
+
+    <a href="{% url 'agent_leads' %}" class="back-link">
+        ← Back to Leads
+    </a>
+
+</div>
+
+{% endblock %}

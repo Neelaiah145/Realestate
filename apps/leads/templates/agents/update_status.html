@@ -1,12 +1,49 @@
-<h2>Update Status</h2>
+{% extends "agent_base.html" %}
+{% load static %}
 
-<form method="post">
-  {% csrf_token %}
-  <select name="status">
-    <option value="new">New</option>
-    <option value="contacted">Contacted</option>
-    <option value="qualified">Qualified</option>
-    <option value="closed">Closed</option>
-  </select>
-  <button type="submit">Save</button>
-</form>
+{% block title %}Update Lead{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'leads/style.css' %}">
+
+<div class="status-wrapper">
+    <div class="status-card">
+        <h2>Update Lead</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- STATUS -->
+            <label>Status</label>
+            <select name="status">
+                <option value="new" {% if lead.status == "new" %}selected{% endif %}>New</option>
+                <option value="contacted" {% if lead.status == "contacted" %}selected{% endif %}>Contacted</option>
+                <option value="qualified" {% if lead.status == "qualified" %}selected{% endif %}>Qualified</option>
+                <option value="closed" {% if lead.status == "closed" %}selected{% endif %}>Closed</option>
+            </select>
+
+            <!-- AGENT NOTE -->
+<label>Agent Note</label>
+<textarea name="agent_note" placeholder="Example: Client asked to call next week">{{ lead.agent_note|default_if_none:'' }}</textarea>
+
+
+
+
+            <!-- FOLLOW-UP TIME -->
+            <label>Follow-up Date & Time</label>
+            <input type="datetime-local"
+                   name="follow_up_at"
+                   value="{% if lead.follow_up_at %}{{ lead.follow_up_at|date:'Y-m-d\\TH:i' }}{% endif %}">
+<div class="form-actions">
+    <button type="submit" class="save-btn">Save</button>
+
+    <a href="{% url 'agent_leads' %}" class="cancel-btn">
+        Cancel & Go Back
+    </a>
+</div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

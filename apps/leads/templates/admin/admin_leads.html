@@ -1,56 +1,102 @@
 {% extends "admin_base.html" %}
+{% load static %}
 
-{% block title %}Leads | Realestate{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block content %}
 
-<h2>PAGE LOADED</h2>
+<link rel="stylesheet" href="{% static 'leads/style.css' %}">
 
-{% if request.user.is_superuser %}
-    <h2>All Leads (Admin)</h2>
+<h2 class="admin-title">Admin Lead Dashboard</h2>
 
-    <table border="1" cellpadding="10" cellspacing="0">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Lead Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Agent</th>
-                <th>Status</th>
-                <th>Assigned At</th>
-                <th>Updated At</th>
-            </tr>
-        </thead>
+<!-- 📊 STATS -->
+<div class="stats">
+    <div class="card">
+        <span>Total Leads</span>
+        <strong>{{ stats.total }}</strong>
+    </div>
+    <div class="card">
+        <span>Open Leads</span>
+        <strong>{{ stats.open }}</strong>
+    </div>
+    <div class="card">
+        <span>Closed Leads</span>
+        <strong>{{ stats.closed }}</strong>
+    </div>
+</div>
 
-        <tbody>
-            {% for lead in leads %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ lead.name }}</td>
-                <td>{{ lead.email }}</td>
-                <td>{{ lead.phone }}</td>
-                <td>
-                    {% if lead.assigned_agent %}
-                        {{ lead.assigned_agent.username }}
-                    {% else %}
-                        <span>Unassigned</span>
-                    {% endif %}
-                </td>
-                <td>{{ lead.get_status_display }}</td>
-                <td>{{ lead.assigned_at }}</td>
-                <td>{{ lead.updated_at }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="8">No leads found</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- 🔍 FILTERS -->
+<form method="get" class="filters">
+    <select name="date">
+        <option value="">All Dates</option>
+        <option value="today" {% if date_filter == "today" %}selected{% endif %}>
+            Today
+        </option>
+        <option value="week" {% if date_filter == "week" %}selected{% endif %}>
+            This Week
+        </option>
+    </select>
 
-{% else %}
-    <p>You are not allowed to view this page.</p>
-{% endif %}
+    <select name="agent">
+        <option value="">All Agents</option>
+        {% for agent in agents %}
+            <option value="{{ agent.id }}"
+                {% if agent_id|add:"0" == agent.id %}
+                    selected
+                {% endif %}
+            >
+                {{ agent.username }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Apply Filters</button>
+</form>
+
+<!-- 📋 LEADS TABLE -->
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Sl.No</th>
+            <th>Customer</th>
+            <th>Phone</th>
+            <th>Agent</th>
+            <th>Status</th>
+            <th>Updated</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for lead in leads %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ lead.name }}</td>
+            <td>{{ lead.phone }}</td>
+            <td>
+                {{ lead.assigned_agent.username|default:"Unassigned" }}
+            </td>
+            <td>
+                <span class="status {{ lead.status }}">
+                    {{ lead.get_status_display }}
+                </span>
+            </td>
+            <td>{{ lead.updated_at|date:"d M Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" class="empty">
+                No leads found for selected filters
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- 🔄 AUTO REFRESH -->
+<script>
+    setTimeout(function () {
+        window.location.reload();
+    }, 60000);
+</script>
 
 {% endblock %}
