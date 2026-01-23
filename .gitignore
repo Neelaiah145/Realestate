@@ -1,6 +1,12 @@
 db.sqlite3
 env/
+<<<<<<< HEAD
+
+=======
 .env
 .env
 myvenv/
 .myvenv
+env
+>>>>>>> 05c62c2eff834905b0b4c3fddea57e8fa28cbb9a
+media

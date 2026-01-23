@@ -33,7 +33,11 @@
                             class="h-full w-full object-cover" /></div>
                     <div class="flex flex-col"><a href="#"
                             class="text-xl font-bold text-text no-underline">Realestate</a>
+<<<<<<< HEAD
                         <p class="text-xs text-muted">Dashboard</p>
+=======
+                        <p class="text-xs text-muted">Payment Dashboard</p>
+>>>>>>> 66862fd67f55f1f8a51d12d01c8169d15dbb10a9
                     </div>
                 </div>
                 <div class="customXl:hidden"><button id="sidebarClose"><i data-lucide="x"></i></button></div>
@@ -57,6 +61,49 @@
                             <span>Analytics</span>
                         </a>
                     </li>
+
+
+
+                    <li class="nav-dropdown">
+                        <button class="nav-item w-full flex items-center justify-between"
+                            onclick="toggleDropdown(this)">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="layers"></i>
+                                <span>Propertys</span>
+                            </div>
+                            <i data-lucide="chevron-down" class="dropdown-icon transition-transform"></i>
+                        </button>
+                        <ul class="nav-dropdown-menu hidden pl-11 mt-1 space-y-1">
+                            <li>
+                                <a href="{% url 'add_property' %}"
+                                    class="block py-2 text-sm text-muted hover:text-primary">
+                                    Add Property
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'property_list' %}"
+                                    class="block py-2 text-sm text-muted hover:text-primary">
+                                    Property List
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'property_details' %}"
+                                    class="block py-2 text-sm text-muted hover:text-primary">
+                                    Property Details
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <script>
+                        function toggleDropdown(button) {
+                            const menu = button.nextElementSibling;
+                            const icon = button.querySelector('.dropdown-icon');
+
+                            menu.classList.toggle('hidden');
+                            icon.style.transform = menu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+                        }
+                    </script>
 
                     <li>
                         <a href="#" class="nav-item">
@@ -114,15 +161,20 @@
                     </li> 
 
                     <!-- ACCOUNT RECEIVABLES -->
+<<<<<<< HEAD
                     <!-- <li class="nav-group-title">ACCOUNT RECEIVABLES</li>
+=======
+                    <!-- <li class="nav-group-title">ACCOUNT RECEIVABLES</li> -->
+>>>>>>> 66862fd67f55f1f8a51d12d01c8169d15dbb10a9
 
-                    <li>
+                    <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="file-text"></i>
                             <span>Invoices</span>
                         </a>
                     </li> -->
 
+<<<<<<< HEAD
                     <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="package"></i>
@@ -130,6 +182,11 @@
                         </a>
                     </li> -->
 
+=======
+                    <!-- Property Dropdown -->
+
+
+>>>>>>> 66862fd67f55f1f8a51d12d01c8169d15dbb10a9
                     <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="receipt"></i>
@@ -138,12 +195,17 @@
                     </li> -->
 
                     <!-- OTHERS -->
+<<<<<<< HEAD
                     <!-- <li class="nav-group-title">OTHERS</li>
+=======
+                    <!-- <li class="nav-group-title">OTHERS</li> -->
+>>>>>>> 66862fd67f55f1f8a51d12d01c8169d15dbb10a9
 
                     <li>
-                        <a href="#" class="nav-item">
+                        <!-- <a href="#" class="nav-item">
                             <i data-lucide="globe"></i>
                             <span>Connections</span>
+<<<<<<< HEAD
                         </a>
                     </li> -->
 
@@ -160,6 +222,24 @@
                             <span>Settings</span>
                         </a>
                     </li> -->
+=======
+                        </a> -->
+                    </li>
+
+                    <li>
+                        <!-- <a href="#" class="nav-item">
+                            <i data-lucide="users-2"></i>
+                            <span>People</span>
+                        </a> -->
+                    </li>
+
+                    <li>
+                        <!-- <a href="#" class="nav-item">
+                            <i data-lucide="settings"></i>
+                            <span>Settings</span>
+                        </a> -->
+                    </li>
+>>>>>>> 66862fd67f55f1f8a51d12d01c8169d15dbb10a9
 
                 </ul>
             </nav>
@@ -354,13 +434,10 @@
         </section>
 
     </main>
-
-
     <script
         src="{% static 'dash/assets/script/cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js' %}"></script>
     <script src="{% static 'dash/assets/script/cdn.jsdelivr.net/npm/xlsx%400.18.5/dist/xlsx.full.min.js' %}"></script>
     <script defer="defer" src="{% static 'dash/assets/script/app.js' %}"></script>
 </body>
-
 
 </html>

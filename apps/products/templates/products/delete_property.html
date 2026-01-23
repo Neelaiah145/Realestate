@@ -1,0 +1,69 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Page Title -->
+    <h1 class="text-2xl font-bold text-text mb-8">Delete Property</h1>
+
+    <!-- Warning Card -->
+    <div class="bg-panel rounded-xl p-8 border border-red-200">
+        <!-- Warning Icon -->
+        <div class="flex items-center justify-center mb-6">
+            <div class="bg-red-100 rounded-full p-4">
+                <i data-lucide="alert-triangle" class="w-12 h-12 text-red-600"></i>
+            </div>
+        </div>
+
+        <!-- Warning Message -->
+        <h2 class="text-xl font-bold text-text text-center mb-4">Are you sure you want to delete this property?</h2>
+        <p class="text-center text-muted mb-6">This action cannot be undone. All property data, images, and features will be permanently deleted.</p>
+
+        <!-- Property Details -->
+        <div class="bg-bg rounded-lg p-6 mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-muted">Property ID</p>
+                    <p class="font-semibold text-text">{{ property.property_id }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-muted">Property Type</p>
+                    <p class="font-semibold text-text">{{ property.property_type|title }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-muted">Location</p>
+                    <p class="font-semibold text-text">{{ property.city }}, {{ property.state }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-muted">Price</p>
+                    <p class="font-semibold text-text">${{ property.property_price|floatformat:0 }}</p>
+                </div>
+            </div>
+            
+            {% if property.images.first %}
+            <div class="mt-4">
+                <img src="{{ property.images.first.image.url }}" alt="{{ property.property_type }}" 
+                    class="w-full h-48 object-cover rounded-lg">
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Action Buttons -->
+        <form method="post" class="flex gap-4">
+            {% csrf_token %}
+            <a href="{% url 'property_list' %}" 
+                class="flex-1 px-6 py-3 border border-border rounded-xl text-text hover:bg-panel transition-colors text-center">
+                Cancel
+            </a>
+            <button type="submit" 
+    class="flex-1 px-6 py-3 border border-border rounded-xl text-text hover:bg-panel transition-colors text-center">
+                Yes, Delete Property
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}
