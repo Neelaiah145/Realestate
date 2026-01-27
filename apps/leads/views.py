@@ -122,8 +122,8 @@ def update_lead_status(request, lead_id):
         # redirect based on role
         if user.is_staff:
             return redirect("admin_leads")
-        # elif user.role == "associate":
-        #     return redirect('associate_leads')
+        elif user.role == "associate":
+            return redirect('associate_leads')
         else:
             return redirect("agent_leads")
 
