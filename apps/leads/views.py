@@ -16,6 +16,7 @@ from django.http import Http404
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Permission
+from django.http import JsonResponse
 from django.urls import reverse
 
 User = get_user_model()
@@ -122,8 +123,8 @@ def update_lead_status(request, lead_id):
         # redirect based on role
         if user.is_staff:
             return redirect("admin_leads")
-        # elif user.role == "associate":
-        #     return redirect('associate_leads')
+        elif user.role == "associate":
+            return redirect('associate_leads')
         else:
             return redirect("agent_leads")
 
@@ -224,17 +225,21 @@ def lead_success(request):
 @login_required
 @permission_required("leads.can_delete_lead", raise_exception=True)
 def delete_lead(request, lead_id):
-    lead = get_object_or_404(
-        Lead,
-        id=lead_id,
-        assigned_agent=request.user   
-    )
 
     if request.method == "POST":
+        lead = get_object_or_404(
+            Lead,
+            id=lead_id,
+            assigned_agent=request.user
+        )
         lead.delete()
-        return redirect("agent_leads")
-    return render(request,"agents/confirm_delete.html",{"lead": lead})
 
+        return JsonResponse({
+            "success": True,
+            "message": "Lead deleted successfully"
+        })
+
+    return JsonResponse({"success": False}, status=400)
 
 
 # agent can see the all details in the user
@@ -346,15 +351,11 @@ def schedule_lead(request, lead_id):
         id=lead_id,
         assigned_agent=request.user
     )
-
     if request.method == "POST":
         lead.site_visit_at = request.POST.get("follow_up_at")
-        lead.status = "New"
+        lead.status = "Shedule"
         lead.save()
-
-
         return redirect("agent_leads")
-
     return render(request,"agents/set_shedule.html",
         {
             "lead": lead,
@@ -392,14 +393,14 @@ def move_lead(request, lead_id):
 
         lead.assigned_associate = associate
         lead.save()
-
         return redirect("agent_leads")
-
     return render(request, "agents/move_lead.html", {
         "lead": lead,
         "associates": associates,
         'page_title':'move lead',
     })
+
+
 
 
 
@@ -409,14 +410,12 @@ def move_lead(request, lead_id):
 def associate_leads(request):
     user = request.user
 
-    # Safety check
     if user.role != "associate":
         return redirect("associate_leads")
 
     leads = Lead.objects.filter(
         assigned_associate=user
     ).order_by("-updated_at")
-
     return render(request,"associates/associate_leads.html",
         {
             "leads": leads,
