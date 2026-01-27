@@ -6,17 +6,19 @@
     <!-- Header with Sort and View Toggle -->
     <div class="flex items-center justify-between mb-6">
         <p class="text-sm text-muted">Showing {{ properties|length }} of {{ total_properties }} Results</p>
-        
+
         <div class="flex items-center gap-4">
             <!-- Sort Dropdown -->
             <form method="get" id="sortForm" class="flex items-center gap-2">
                 <span class="text-sm text-text">Sort by:</span>
-                <select name="sort" onchange="document.getElementById('sortForm').submit()" 
+                <select name="sort" onchange="document.getElementById('sortForm').submit()"
                     class="px-4 py-2 border border-border rounded-lg bg-bg text-text focus:outline-none focus:ring-2 focus:ring-primary">
-                    <option value="default" {% if sort_by == 'default' %}selected{% endif %}>Default</option>
-                    <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
-                    <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
-                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="default" {% if sort_by=='default' %}selected{% endif %}>Default</option>
+                    <option value="price_low" {% if sort_by=='price_low' %}selected{% endif %}>Price: Low to High
+                    </option>
+                    <option value="price_high" {% if sort_by=='price_high' %}selected{% endif %}>Price: High to Low
+                    </option>
+                    <option value="newest" {% if sort_by=='newest' %}selected{% endif %}>Newest First</option>
                 </select>
             </form>
 
@@ -40,17 +42,20 @@
             <!-- Image -->
             <div class="relative">
                 {% if property.images.all %}
-                    <img src="{{ property.images.first.image.url }}" alt="{{ property.property_type }}" class="w-full h-56 object-cover">
+                <img src="{{ property.images.first.image.url }}" alt="{{ property.property_type }}"
+                    class="w-full h-56 object-cover">
                 {% else %}
-                    <img src="{% static 'dash/assets/images/property1.jpg' %}" alt="{{ property.property_type }}" class="w-full h-56 object-cover">
+                <img src="{% static 'dash/assets/images/property1.jpg' %}" alt="{{ property.property_type }}"
+                    class="w-full h-56 object-cover">
                 {% endif %}
-                
+
                 <!-- Location Badge -->
-                <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
+                <div
+                    class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1">
                     <i data-lucide="map-pin" class="w-4 h-4 text-primary"></i>
                     <span class="text-sm font-medium">{{ property.city }}</span>
                 </div>
-                
+
                 <!-- Status Badge -->
                 <div class="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
                     {{ property.get_property_status_display }}
@@ -90,19 +95,23 @@
                 <div class="flex items-center justify-between pt-4 border-t border-border">
                     <!-- Agent -->
                     <div class="flex items-center gap-2">
-                        <img src="{% static 'dash/assets/images/icons/user_img.png' %}" alt="Agent" class="w-8 h-8 rounded-full">
-                        <span class="text-sm text-text font-medium">{{ property.agent.get_full_name|default:property.agent.username }}</span>
+                        <img src="{% static 'dash/assets/images/icons/user_img.png' %}" alt="Agent"
+                            class="w-8 h-8 rounded-full">
+                        <span class="text-sm text-text font-medium">{{
+                            property.agent.get_full_name|default:property.agent.username }}</span>
                     </div>
 
                     <!-- Actions -->
                     <div class="flex items-center gap-2">
-                        <a href="{% url 'property_details_id' property.id %}" class="p-2 hover:bg-bg rounded-lg" title="View Details">
+                        <a href="{% url 'property_details_id' property.id %}" class="p-2 hover:bg-bg rounded-lg"
+                            title="View Details">
                             <i data-lucide="eye" class="w-5 h-5 text-muted"></i>
                         </a>
                         <a href="{% url 'edit_property' property.id %}" class="p-2 hover:bg-bg rounded-lg" title="Edit">
                             <i data-lucide="edit" class="w-5 h-5 text-muted"></i>
                         </a>
-                        <button onclick="deleteProperty({{ property.id }})" class="p-2 hover:bg-bg rounded-lg" title="Delete">
+                        <button onclick="deleteProperty({{ property.id }})" class="p-2 hover:bg-bg rounded-lg"
+                            title="Delete">
                             <i data-lucide="trash-2" class="w-5 h-5 text-red-500"></i>
                         </button>
                     </div>
@@ -115,7 +124,8 @@
             <i data-lucide="home" class="w-16 h-16 text-muted mx-auto mb-4"></i>
             <h3 class="text-xl font-semibold text-text mb-2">No Properties Found</h3>
             <p class="text-muted mb-4">Start by adding your first property</p>
-            <a href="{% url 'add_property' %}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors">
+            <a href="{% url 'add_property' %}"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors">
                 <i data-lucide="plus" class="w-5 h-5"></i>
                 <span>Add Property</span>
             </a>
@@ -127,10 +137,10 @@
     {% if properties.has_other_pages %}
     <div class="flex items-center justify-center gap-2 mt-8">
         {% if properties.has_previous %}
-            <a href="?page={{ properties.previous_page_number }}&sort={{ sort_by }}" 
-                class="px-4 py-2 border border-border rounded-lg text-text hover:bg-panel">
-                Previous
-            </a>
+        <a href="?page={{ properties.previous_page_number }}&sort={{ sort_by }}"
+            class="px-4 py-2 border border-border rounded-lg text-text hover:bg-panel">
+            Previous
+        </a>
         {% endif %}
 
         <span class="px-4 py-2 text-text">
@@ -138,10 +148,10 @@
         </span>
 
         {% if properties.has_next %}
-            <a href="?page={{ properties.next_page_number }}&sort={{ sort_by }}" 
-                class="px-4 py-2 border border-border rounded-lg text-text hover:bg-panel">
-                Next
-            </a>
+        <a href="?page={{ properties.next_page_number }}&sort={{ sort_by }}"
+            class="px-4 py-2 border border-border rounded-lg text-text hover:bg-panel">
+            Next
+        </a>
         {% endif %}
     </div>
     {% endif %}
@@ -158,11 +168,11 @@
 </script>
 
 <style>
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
 </style>
 {% endblock %}
