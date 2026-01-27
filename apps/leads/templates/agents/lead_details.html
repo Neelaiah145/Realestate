@@ -2,73 +2,96 @@
 {% load static %}
 
 {% block title %}Lead Details{% endblock %}
-
 {% block content %}
-
 
 <link rel="stylesheet" href="{% static 'leads/style.css' %}">
 
 <div class="lead-detail-wrapper">
 
-    <h2>Lead Details</h2>
+    <h2 class="detail-title">Lead Details</h2>
+    <h2>Agent Name:
+        {% if lead.assigned_agent %}
+        {{ lead.assigned_agent.username }}
+        {% else %}
+        Not Assigned
+        {% endif %}
+    </h2>
 
     <table class="lead-detail-table">
-        <tr>
-            <th>Name</th>
-            <td>{{ lead.name }}</td>
-        </tr>
-        <tr>
-            <th>Email</th>
-            <td>{{ lead.email|default:"NA" }}</td>
-        </tr>
-        <tr>
-            <th>Phone</th>
-            <td>{{ lead.phone }}</td>
-        </tr>
-        <tr>
-            <th>Message</th>
-            <td>{{ lead.message|default:"NA" }}</td>
-        </tr>
-        <tr>
-            <th>Status</th>
-            <td>{{ lead.get_status_display }}</td>
-        </tr>
-        <tr>
-            <th>Agent Note</th>
-            <td>{{ lead.agent_note|default:"NA" }}</td>
-        </tr>
-        <tr>
-            <th>Client Response</th>
-            <td>{{ lead.client_response|default:"NA" }}</td>
-        </tr>
-        <tr>
-            <th>Client Response</th>
-            <td>{{ lead.client_response|default:"NA" }}</td>
-        </tr>
+        <tbody>
+            <tr>
+                <th>Name</th>
+                <td>{{ lead.name }}</td>
+            </tr>
 
-        <tr>
-            <th>Follow-up At</th>
-            <td>
-                {% if lead.follow_up_at %}
-                    {{ lead.follow_up_at|date:"d M Y H:i" }}
-                {% else %}
+            <tr>
+                <th>Email</th>
+                <td>{{ lead.email|default:"NA" }}</td>
+            </tr>
+
+            <tr>
+                <th>Status</th>
+                <td class="status">{{ lead.get_status_display }}</td>
+            </tr>
+
+            <tr>
+                <th>Property Type</th>
+                <td>{{ lead.property_type|default:"NA" }}</td>
+            </tr>
+
+            <tr>
+                <th>Preferred Location</th>
+                <td>{{ lead.preferred_location|default:"NA" }}</td>
+            </tr>
+
+            <tr>
+                <th>Budget</th>
+                <td>
+                    {% if lead.budget_min or lead.budget_max %}
+                    {{ lead.budget_min|default:"—" }} – {{ lead.budget_max|default:"—" }}
+                    {% else %}
                     NA
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <th>Assigned At</th>
-            <td>{{ lead.assigned_at|date:"d M Y H:i" }}</td>
-        </tr>
-        <tr>
-            <th>Last Updated</th>
-            <td>{{ lead.updated_at|date:"d M Y H:i" }}</td>
-        </tr>
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Interest Level</th>
+                <td>{{ lead.interest_level|default:"NA" }}</td>
+            </tr>
+
+            <tr>
+                <th>Next Action</th>
+                <td>{{ lead.next_action|default:"NA" }}</td>
+            </tr>
+
+            <tr>
+                <th>Client Response</th>
+                <td class="wrap">{{ lead.client_response|default:"NA" }}</td>
+            </tr>
+
+            <tr>
+                <th>Agent Note</th>
+                <td class="wrap">{{ lead.agent_note|default:"NA" }}</td>
+            </tr>
+
+            <tr>
+                <th>Follow-up</th>
+                <td>
+                    {% if lead.follow_up_at %}
+                    {{ lead.follow_up_at|date:"d M Y · H:i" }}
+                    {% else %}
+                    NA
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
     </table>
 
-    <a href="{% url 'agent_leads' %}" class="back-link">
-        ◀ Back to Leads
-    </a>
+    <div class="detail-actions">
+        <!-- <a href="{% url 'update_lead_status' lead.id %}" class="btn-edit">✍️ Edit</a> -->
+        <a href="{{ back_url }}" class="btn-back">⬅ Back</a>
+    </div>
 
 </div>
 

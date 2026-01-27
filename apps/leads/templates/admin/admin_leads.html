@@ -35,6 +35,8 @@
             <select name="date">
                 <option value="">All Dates</option>
                 <option value="today" {% if date_filter == "today" %}selected{% endif %}>Today</option>
+                <option value="yesterday" {% if date_filter == "yesterday" %}selected{% endif %}>Yesterday</option>
+
                 <option value="week" {% if date_filter == "week" %}selected{% endif %}>This Week</option>
     
             </select>
@@ -43,8 +45,7 @@
                 <option value="">All Agents</option>
                 {% for agent in agents %}
                     <option value="{{ agent.id }}"
-                        {% if agent_id|add:"0" == agent.id %}selected{% endif %}
-                    >
+                        {% if agent_id|add:"0" == agent.id %}selected{% endif %}>
                         {{ agent.username }}
                     </option>
                 {% endfor %}
@@ -65,7 +66,7 @@
                     <th>Agent</th>
                     <th>Status</th>
                     <th>Updated</th>
-                    <th>Response</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,9 +83,9 @@
                         </span>
                     </td>
                     <td>{{ lead.updated_at|date:"d M Y, h:i A" }}</td>
-                    <!-- <td>
-                        <a href="{% url 'lead_detail' lead.id %}" class="action-link" title="View">👁</a>
-                    </td> -->
+                    <td>
+                        <a href="{% url 'lead_detail' lead.id %}" class="action-link" title="View">View Lead Details</a>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
