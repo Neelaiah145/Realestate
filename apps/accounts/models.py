@@ -47,7 +47,17 @@ class User(AbstractUser):
         choices=Role.choices,
         default=Role.AGENT
     )
-
+    
+    # new column for associates
+    parent_agent = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="associates",
+        limit_choices_to={"role": "agent"}
+    )
+    
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
