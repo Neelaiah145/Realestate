@@ -43,7 +43,16 @@ class Lead(models.Model):
         blank=True,
         related_name="assigned_leads"
     )
-
+    
+    # new column for associates
+    assigned_associate = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="associate_leads",
+        limit_choices_to={"role": "associate"}
+    )
     # CRM STATUS (CONTROLLED)
     status = models.CharField(
         max_length=20,

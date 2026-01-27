@@ -59,6 +59,7 @@
             <th>SL.NO</th>
             <th>Name</th>
             <th>Status</th>
+            <th>Associate</th>
             <th>Assigned At</th>
             <th>Updated At</th>
             <th>Site Visit Schedule</th>
@@ -70,41 +71,70 @@
         {% for lead in leads %}
         <tr class="{% if lead.is_due %}lead-due-row{% endif %}">
             <td>{{ leads.start_index|add:forloop.counter0 }}</td>
+
             <td>{{ lead.name }}</td>
+
             <td>{{ lead.get_status_display }}</td>
+
+            <!-- ASSOCIATE COLUMN -->
+            <td>
+                {% if lead.assigned_associate %}
+                    <span style="font-weight:500; color:#2563eb;">
+                        {{ lead.assigned_associate.username }}
+                    </span>
+                {% else %}
+                    <span style="color:#9ca3af;">—</span>
+                {% endif %}
+            </td>
+
             <td>{{ lead.assigned_at|date:"d M Y - h:i A" }}</td>
+
             <td>{{ lead.updated_at|date:"d M Y - h:i A" }}</td>
 
             <!-- visiting schedule -->
             <td style="text-align:center;">
                 {% if lead.site_visit_at %}
-                <a href="{% url 'set_shedule' lead.id %}" class="action-link site-visit-done"
-                    title="Reschedule Site Visit">
+                <a href="{% url 'set_shedule' lead.id %}"
+                   class="action-link site-visit-done"
+                   title="Reschedule Site Visit">
                     Site Visit Scheduled
                 </a>
                 {% else %}
-                <a href="{% url 'set_shedule' lead.id %}" class="action-link site-visit-pending"
-                    title="Schedule Site Visit">
+                <a href="{% url 'set_shedule' lead.id %}"
+                   class="action-link site-visit-pending"
+                   title="Schedule Site Visit">
                     Site Visit Schedule
                 </a>
                 {% endif %}
             </td>
 
-            <!-- lead details/update/delete -->
+            <!-- ACTIONS -->
             <td>
                 <a href="{% url 'lead_detail' lead.id %}" class="action-link" title="View">👁</a> |
 
                 {% if perms.leads.can_update_lead %}
-                <a href="{% url 'update_lead_status' lead.id %}" class="action-link" title="Update">Update</a> |
+                <a href="{% url 'update_lead_status' lead.id %}" class="action-link" title="Update">
+                    Update
+                </a> |
+                {% endif %}
+
+                {% if request.user.role == "agent" %}
+                <a href="{% url 'move_lead' lead.id %}" class="action-link">
+                    Move
+                </a> |
                 {% endif %}
 
                 {% if perms.leads.can_book_lead %}
-                <a href="#" class="action-link booking-link" title="Booking">Booking</a> |
+                <a href="#" class="action-link booking-link" title="Booking">
+                    Booking
+                </a> |
                 {% endif %}
 
                 {% if perms.leads.can_delete_lead %}
-                <form method="post" action="{% url 'delete_lead' lead.id %}" style="display:inline;"
-                    onsubmit="return confirm('Delete this lead?');">
+                <form method="post"
+                      action="{% url 'delete_lead' lead.id %}"
+                      style="display:inline;"
+                      onsubmit="return confirm('Delete this lead?');">
                     {% csrf_token %}
                     <button type="submit" class="delete-btn" title="Delete">
                         Delete
@@ -116,13 +146,14 @@
 
         {% empty %}
         <tr>
-            <td colspan="7" style="text-align:center;color:#6b7280;">
+            <td colspan="8" style="text-align:center;color:#6b7280;">
                 No leads available
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 
 <!-- set other page/search bar  -->
 {% if leads.has_other_pages %}

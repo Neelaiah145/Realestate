@@ -105,9 +105,13 @@
             <textarea name="agent_note" class="field-textarea">{{ lead.agent_note }}</textarea>
         </div>
 
-        <div class="action-bar"> <button type="submit" class="btn-save">Save</button> 
-            <a href="{% url 'agent_leads' %}" class="btn-back">Back</a> 
-        </div>
+<div class="action-bar">
+    <button type="submit" class="btn-save">Save</button>
+
+    <button type="button" class="btn-back" onclick="window.history.back()">
+        Back
+    </button>
+</div>
 
     </form>
 </div>

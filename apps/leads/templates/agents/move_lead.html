@@ -1,0 +1,58 @@
+{% extends "agent_base.html" %}
+{% block content %}
+
+<style>
+.card {
+    max-width: 500px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.btn {
+    background: #16a34a;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+</style>
+
+<div class="card">
+    <h2>Move Lead</h2>
+
+    <p><strong>Lead:</strong> {{ lead.name }} ({{ lead.phone }})</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Select Associate</label>
+            <select name="associate" required>
+                <option value="">-- Select Associate --</option>
+                {% for associate in associates %}
+                <option value="{{ associate.id }}">
+                    {{ associate.username }} ({{ associate.email }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button class="btn">Assign Lead</button>
+    </form>
+</div>
+
+{% endblock %}

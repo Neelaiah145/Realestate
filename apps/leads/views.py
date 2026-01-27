@@ -84,14 +84,17 @@ def agent_leads(request):
 @permission_required("leads.can_update_lead", raise_exception=True)
 def update_lead_status(request, lead_id):
 
-    lead = get_object_or_404(
-        Lead,
-        id=lead_id,
-        assigned_agent=request.user
-    )
+    lead = get_object_or_404(Lead, id=lead_id)
+    user = request.user
+
+    if not (
+        user.is_staff or
+        lead.assigned_agent == user or
+        lead.assigned_associate == user
+    ):
+        raise Http404("Not allowed")
 
     if request.method == "POST":
-
         lead.status = request.POST.get("status")
         lead.property_type = request.POST.get("property_type") or ""
         lead.preferred_location = request.POST.get("preferred_location") or ""
@@ -99,7 +102,6 @@ def update_lead_status(request, lead_id):
         lead.budget_max = request.POST.get("budget_max") or None
         lead.purchase_timeline = request.POST.get("purchase_timeline") or ""
 
-     
         lead.interest_level = request.POST.get("interest_level") or ""
         lead.next_action = request.POST.get("next_action") or ""
         lead.client_response = request.POST.get("client_response") or ""
@@ -114,13 +116,20 @@ def update_lead_status(request, lead_id):
         else:
             lead.follow_up_at = None
 
-    
         lead.agent_note = request.POST.get("agent_note") or ""
         lead.save()
-        return redirect("agent_leads",)
 
-    return render(request,"agents/update_status.html",{"lead": lead})
+        # redirect based on role
+        if user.is_staff:
+            return redirect("admin_leads")
+        # elif user.role == "associate":
+        #     return redirect('associate_leads')
+        else:
+            return redirect("agent_leads")
 
+    return render(request,"agents/update_status.html",
+        {"lead": lead,'page_title':'Updated_Details'}
+    )
 
 
 # admin leads 
@@ -232,15 +241,23 @@ def delete_lead(request, lead_id):
 
 def lead_detail(request, lead_id):
     lead = get_object_or_404(Lead, id=lead_id)
+    user = request.user
 
-    if not request.user.is_staff and lead.assigned_agent != request.user:
+ 
+    if not (
+        user.is_staff or
+        lead.assigned_agent == user or
+        lead.assigned_associate == user
+    ):
         raise Http404("Not allowed")
 
-    # role-based fallback
-    if request.user.is_staff:
+   
+    if user.is_staff:
         default_back = reverse("admin_leads")
+    elif user.role == "associate":
+        default_back = reverse("agent_dashboard")  
     else:
-        default_back = reverse("agent_leads")
+        default_back = reverse("agent_leads")      
 
     back_url = request.META.get("HTTP_REFERER", default_back)
 
@@ -332,7 +349,7 @@ def schedule_lead(request, lead_id):
 
     if request.method == "POST":
         lead.site_visit_at = request.POST.get("follow_up_at")
-        lead.status = "contacted"
+        lead.status = "New"
         lead.save()
 
 
@@ -347,3 +364,62 @@ def schedule_lead(request, lead_id):
 
 
     
+    
+    
+
+
+# assigned the task for associates
+
+@login_required
+def move_lead(request, lead_id):
+    lead = get_object_or_404(Lead, id=lead_id)
+
+    if request.user != lead.assigned_agent:
+        return redirect("agent_leads")
+
+    associates = User.objects.filter(
+        role="associate",
+        parent_agent=request.user
+    )
+
+    if request.method == "POST":
+        associate_id = request.POST.get("associate")
+        associate = get_object_or_404(
+            User,
+            id=associate_id,
+            parent_agent=request.user
+        )
+
+        lead.assigned_associate = associate
+        lead.save()
+
+        return redirect("agent_leads")
+
+    return render(request, "agents/move_lead.html", {
+        "lead": lead,
+        "associates": associates,
+        'page_title':'move lead',
+    })
+
+
+
+# associate_leads
+
+@login_required
+def associate_leads(request):
+    user = request.user
+
+    # Safety check
+    if user.role != "associate":
+        return redirect("associate_leads")
+
+    leads = Lead.objects.filter(
+        assigned_associate=user
+    ).order_by("-updated_at")
+
+    return render(request,"associates/associate_leads.html",
+        {
+            "leads": leads,
+            'page_title':'My Leads'
+        }
+    )

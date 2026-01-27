@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import login_view,logout_view,admin_dashboard_view,change_superuser_image,base,toggle_user_status,delete_user,base,agent_dashboard_view
-
+from .views import create_associate,associate_dashboard_view
 urlpatterns = [
     path('', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
@@ -10,6 +10,11 @@ urlpatterns = [
     path("user/status/<int:user_id>/", toggle_user_status, name="toggle-user"),
     path("user/delete/<int:user_id>/", delete_user, name="delete-user"),
     path('agents/agent_dashboard/',agent_dashboard_view,name='agent_dashboard'),
+    path('agents/create_associate/',create_associate,name = 'create_associate'),
+    path('associate/associate_dashboard/',associate_dashboard_view,name='associate_dashboard'),
+
+    
+    
 
     
     

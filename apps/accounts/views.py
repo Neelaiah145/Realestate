@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from apps.leads.models import Lead
 import os
 User = get_user_model()
 # =========================
@@ -11,9 +12,12 @@ User = get_user_model()
 def redirect_user(user):
     if user.is_superuser:
         return redirect('admin_dashboard')
+
+    elif user.role == 'associate':
+        return redirect('associate_dashboard')
+
     else:
         return redirect('agent_dashboard')
-
 
 # =========================
 # LOGIN VIEW (NO login_required)
@@ -115,8 +119,28 @@ def admin_dashboard_view(request):
 
 @login_required
 def agent_dashboard_view(request):
-    return render(request,'agent/agent_dashboard.html')
+    user = request.user
 
+    # CREATE associate
+    if request.method == "POST" and user.role == "agent":
+        User.objects.create_user(
+            email=request.POST["email"],
+            username=request.POST["username"],
+            password=request.POST["password"],
+            role="associate",
+            parent_agent=user
+        )
+        return redirect("agent_dashboard")
+
+
+    associates = User.objects.filter(
+        role="associate",
+        parent_agent=user
+    )
+
+    return render(request,"agent/agent_dashboard.html",
+        {"associates": associates}
+    )
 
 
 # @login_required
@@ -165,3 +189,38 @@ def base(request):
 
 
 
+
+
+# assocayed dajsbaird page
+@login_required
+def associate_dashboard_view(request):
+    return render(request,"associate/associate_dashboard.html",)
+
+
+
+
+
+
+# render the page in associates
+@login_required
+def create_associate(request):
+    if request.user.role != "agent":
+        return redirect("agent_dashboard")
+
+    if request.method == "POST":
+        User.objects.create_user(
+            email=request.POST["email"],
+            username=request.POST["username"],
+            password=request.POST["password"],
+            role="associate",
+            parent_agent=request.user   # 🔥 KEY LINE
+        )
+        return redirect("agent_dashboard")
+
+    return render(request, "agent/agent_dashboard.html")
+
+
+
+
+def associate_base(request):
+    return render(request,'associate_base.html')

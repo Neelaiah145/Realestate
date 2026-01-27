@@ -56,48 +56,81 @@
     </form>
 
     <!-- TABLE WRAPPER (IMPORTANT FOR MOBILE) -->
-    <div class="table-wrapper">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>SL.NO</th>
-                    <th>Customer</th>
-                    <th>Phone</th>
-                    <th>Agent</th>
-                    <th>Status</th>
-                    <th>Updated</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for lead in leads %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ lead.name }}</td>
-                    <td>{{ lead.phone }}</td>
-                    <td>{{ lead.assigned_agent.username|default:"Unassigned" }}</td>
-                    
-                    <td>
-                        <span class="status {{ lead.status }}">
-                            {{ lead.get_status_display }}
-                        </span>
-                    </td>
-                    <td>{{ lead.updated_at|date:"d M Y, h:i A" }}</td>
-                    <td>
-                        <a href="{% url 'lead_detail' lead.id %}" class="action-link" title="View">View Lead Details</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="empty">
-                        No leads found for selected filters
-                    </td>
-                </tr>
-               
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div class="table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>SL.NO</th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Agent</th>
+                <th>Associate</th>
+                <th>Status</th>
+                <th>Updated</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for lead in leads %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+
+                <td>{{ lead.name }}</td>
+
+                <td>{{ lead.phone }}</td>
+
+                <!-- AGENT -->
+                <td>
+                    {% if lead.assigned_agent %}
+                        {{ lead.assigned_agent.username }}
+                    {% else %}
+                        <span style="color:#9ca3af;">Unassigned</span>
+                    {% endif %}
+                </td>
+
+                <!-- ASSOCIATE -->
+                <td>
+                    {% if lead.assigned_associate %}
+                        {{ lead.assigned_associate.username }}
+                    {% else %}
+                        <span style="color:#9ca3af;">—</span>
+                    {% endif %}
+                </td>
+
+                <!-- STATUS -->
+                <td>
+                    <span class="status {{ lead.status }}">
+                        {{ lead.get_status_display }}
+                    </span>
+                </td>
+
+                <!-- UPDATED -->
+                <td>
+                    {{ lead.updated_at|date:"d M Y, h:i A" }}
+                </td>
+
+                <!-- ACTION -->
+                <td>
+                    <a href="{% url 'lead_detail' lead.id %}"
+                       class="action-link"
+                       title="View">
+                        View Lead Details
+                    </a>
+                </td>
+            </tr>
+
+            {% empty %}
+            <tr>
+                <td colspan="8" class="empty">
+                    No leads found for selected filters
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 
 </div>
 
