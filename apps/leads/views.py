@@ -12,9 +12,11 @@ from django.contrib.auth import get_user_model
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import make_aware
 import datetime
+from django.http import Http404
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Permission
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -90,23 +92,19 @@ def update_lead_status(request, lead_id):
 
     if request.method == "POST":
 
-        # -------- STATUS --------
         lead.status = request.POST.get("status")
-
-        # -------- CLIENT REQUIREMENTS --------
         lead.property_type = request.POST.get("property_type") or ""
         lead.preferred_location = request.POST.get("preferred_location") or ""
         lead.budget_min = request.POST.get("budget_min") or None
         lead.budget_max = request.POST.get("budget_max") or None
         lead.purchase_timeline = request.POST.get("purchase_timeline") or ""
 
-        # -------- CALL FEEDBACK --------
+     
         lead.interest_level = request.POST.get("interest_level") or ""
         lead.next_action = request.POST.get("next_action") or ""
         lead.client_response = request.POST.get("client_response") or ""
         lead.objections = request.POST.get("objections") or ""
 
-        # -------- FOLLOW UP --------
         follow_up = request.POST.get("follow_up_at")
         if follow_up:
             dt = parse_datetime(follow_up)
@@ -116,20 +114,12 @@ def update_lead_status(request, lead_id):
         else:
             lead.follow_up_at = None
 
-        # -------- AGENT NOTES --------
+    
         lead.agent_note = request.POST.get("agent_note") or ""
-
         lead.save()
-        return redirect("agent_leads")
+        return redirect("agent_leads",)
 
-    return render(
-        request,
-        "agents/update_status.html",
-        {
-            "lead": lead,
-            "page_title": "Update Lead"
-        }
-    )
+    return render(request,"agents/update_status.html",{"lead": lead})
 
 
 
@@ -146,12 +136,17 @@ def admin_leads(request):
 
     if date_filter == "today":
         leads = leads.filter(assigned_at__date=today)
+    
+    elif date_filter == "yesterday":
+        start = today - datetime.timedelta(days = 1)
+        end = today
+        leads = leads.filter(assigned_at__date__gte=start,assigned_at__date__lt=end)
 
     elif date_filter == "week":
         start_week = today - datetime.timedelta(days=7)
         leads = leads.filter(assigned_at__date__gte=start_week)
 
-  
+    
     if agent_id:
         try:
             agent = User.objects.get(pk=int(agent_id))   
@@ -234,16 +229,28 @@ def delete_lead(request, lead_id):
 
 
 # agent can see the all details in the user
-@login_required
+
 def lead_detail(request, lead_id):
-    lead = get_object_or_404(
-        Lead,
-        id=lead_id,
-        assigned_agent=request.user   
+    lead = get_object_or_404(Lead, id=lead_id)
+
+    if not request.user.is_staff and lead.assigned_agent != request.user:
+        raise Http404("Not allowed")
+
+    # role-based fallback
+    if request.user.is_staff:
+        default_back = reverse("admin_leads")
+    else:
+        default_back = reverse("agent_leads")
+
+    back_url = request.META.get("HTTP_REFERER", default_back)
+
+    return render(request,"agents/lead_details.html",
+        {
+            "lead": lead,
+            "back_url": back_url,
+            "page_title": "Details"
+        }
     )
-
-    return render(request,"agents/lead_details.html",{"lead": lead,"page_title":"Details"})
-
 
 
 

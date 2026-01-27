@@ -2,21 +2,20 @@
 {% load static %}
 
 {% block title %}Update Lead{% endblock %}
-
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'leads/style.css' %}">
 
 <div class="lead-wrapper">
-
     <form method="post" class="lead-card">
         {% csrf_token %}
-    <H2>Lead Name:  {{ lead.name }}</H2>
+
+        <h2 class="form-title">Update Lead – {{ lead.name }}</h2>
+
         <!-- STATUS -->
-        <h3 class="block-title">Status</h3>
         <div class="field-block">
             <label class="field-label">Status</label>
-            <select name="status" class="field-select small">
+            <select name="status" class="field-select">
                 <option value="new" {% if lead.status == "new" %}selected{% endif %}>New</option>
                 <option value="contacted" {% if lead.status == "contacted" %}selected{% endif %}>Contacted</option>
                 <option value="qualified" {% if lead.status == "qualified" %}selected{% endif %}>Qualified</option>
@@ -24,7 +23,6 @@
             </select>
         </div>
 
-        <!-- CLIENT REQUIREMENTS -->
         <h3 class="block-title">Client Requirements</h3>
 
         <div class="two-col">
@@ -32,89 +30,86 @@
                 <label class="field-label">Property Type</label>
                 <select name="property_type" class="field-select">
                     <option value="">-- Select --</option>
-                    <option>Plot</option>
-                    <option>Flat</option>
-                    <option>Villa</option>
-                    <option>Commercial</option>
+                    <option value="plot" {% if lead.property_type == "plot" %}selected{% endif %}>Plot</option>
+                    <option value="flat" {% if lead.property_type == "flat" %}selected{% endif %}>Flat</option>
+                    <option value="villa" {% if lead.property_type == "villa" %}selected{% endif %}>Villa</option>
+                    <option value="commercial" {% if lead.property_type == "commercial" %}selected{% endif %}>Commercial
+                    </option>
                 </select>
             </div>
 
             <div class="field-block">
                 <label class="field-label">Preferred Location</label>
-                <input type="text" name="preferred_location" class="field-input">
+                <input type="text" name="preferred_location" value="{{ lead.preferred_location }}" class="field-input">
             </div>
 
             <div class="field-block">
                 <label class="field-label">Budget Min</label>
-                <input type="number" name="budget_min" class="field-input">
+                <input type="number" name="budget_min" value="{{ lead.budget_min }}" class="field-input">
             </div>
 
             <div class="field-block">
                 <label class="field-label">Budget Max</label>
-                <input type="number" name="budget_max" class="field-input">
+                <input type="number" name="budget_max" value="{{ lead.budget_max }}" class="field-input">
             </div>
 
             <div class="field-block">
                 <label class="field-label">Purchase Timeline</label>
                 <select name="purchase_timeline" class="field-select">
-                    <option value="">-- Select --</option>
-                    <option>Immediate</option>
-                    <option>1–3 Months</option>
-                    <option>3–6 Months</option>
-                    <option>Just Enquiry</option>
+                    <option value="immediate" {% if lead.purchase_timeline == "immediate" %}selected{% endif %}>Immediate
+                    </option>
+                    <option value="1-3" {% if lead.purchase_timeline == "1-3" %}selected{% endif %}>1–3 Months</option>
+                    <option value="3-6" {% if lead.purchase_timeline == "3-6" %}selected{% endif %}>3–6 Months</option>
+                    <option value="enquiry" {% if lead.purchase_timeline == "enquiry" %}selected{% endif %}>Just Enquiry
+                    </option>
                 </select>
             </div>
         </div>
 
-        <!-- CALL FEEDBACK -->
         <h3 class="block-title">Call Feedback</h3>
 
         <div class="two-col">
             <div class="field-block">
                 <label class="field-label">Interest Level</label>
-                <select name="interest_level" class="field-select small">
-                    <option value="">-- Select --</option>
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
+                <select name="interest_level" class="field-select">
+                    <option value="low" {% if lead.interest_level == "low" %}selected{% endif %}>Low</option>
+                    <option value="medium" {% if lead.interest_level == "medium" %}selected{% endif %}>Medium</option>
+                    <option value="high" {% if lead.interest_level == "high" %}selected{% endif %}>High</option>
                 </select>
             </div>
 
             <div class="field-block">
                 <label class="field-label">Next Action</label>
-                <input type="text" name="next_action" class="field-input">
+                <input type="text" name="next_action" value="{{ lead.next_action }}" class="field-input">
             </div>
         </div>
 
         <div class="field-block">
             <label class="field-label">Client Response</label>
-            <textarea name="client_response" class="field-textarea"></textarea>
+            <textarea name="client_response" class="field-textarea">{{ lead.client_response }}</textarea>
         </div>
 
         <div class="field-block">
             <label class="field-label">Objections / Concerns</label>
-            <textarea name="objections" class="field-textarea"></textarea>
+            <textarea name="objections" class="field-textarea">{{ lead.objections }}</textarea>
         </div>
 
-        <!-- FOLLOW UP -->
-        <h3 class="block-title">Follow-up</h3>
         <div class="field-block">
             <label class="field-label">Next Follow-up</label>
-            <input type="datetime-local" name="follow_up_at" class="field-input">
+            <input type="datetime-local" name="follow_up_at" value="{{ lead.follow_up_at|date:'Y-m-d\\TH:i' }}"
+                class="field-input">
         </div>
 
-        <!-- NOTES -->
-        <h3 class="block-title">Agent Notes</h3>
-        <textarea name="agent_note" class="field-textarea"></textarea>
+        <div class="field-block">
+            <label class="field-label">Agent Notes</label>
+            <textarea name="agent_note" class="field-textarea">{{ lead.agent_note }}</textarea>
+        </div>
 
-        <!-- ACTIONS -->
-        <div class="action-bar">
-            <button type="submit" class="btn-save">Save</button>
-            <a href="{% url 'agent_leads' %}" class="btn-back">Back</a>
+        <div class="action-bar"> <button type="submit" class="btn-save">Save</button> 
+            <a href="{% url 'agent_leads' %}" class="btn-back">Back</a> 
         </div>
 
     </form>
 </div>
-
 
 {% endblock %}
