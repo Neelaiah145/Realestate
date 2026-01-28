@@ -133,3 +133,104 @@ class Lead(models.Model):
             ("can_delete_lead","can delete lead"),
             ("can_book_lead","can book lead"),
         ]
+
+
+
+class LeadHistory(models.Model):
+ 
+    lead = models.ForeignKey(
+        Lead,
+        on_delete=models.CASCADE,
+        related_name="histories"
+    )
+    
+    # Core fields to track - mirrors Lead model fields
+    status = models.CharField(
+        max_length=20,
+        choices=Lead.STATUS_CHOICES
+    )
+    
+    property_type = models.CharField(
+        max_length=20,
+        choices=Lead.PROPERTY_TYPE_CHOICES,
+        blank=True
+    )
+    
+    preferred_location = models.CharField(
+        max_length=100,
+        blank=True
+    )
+    
+    budget_min = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+    
+    budget_max = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+    
+    purchase_timeline = models.CharField(
+        max_length=20,
+        choices=Lead.PURCHASE_TIMELINE_CHOICES,
+        blank=True
+    )
+    
+    # Call feedback fields
+    interest_level = models.CharField(
+        max_length=10,
+        choices=Lead.INTEREST_LEVEL_CHOICES,
+        blank=True
+    )
+    
+    next_action = models.CharField(
+        max_length=255,
+        blank=True
+    )
+    
+    client_response = models.TextField(blank=True)
+    objections = models.TextField(blank=True)
+    agent_note = models.TextField(blank=True)
+    
+    # Follow-up tracking
+    follow_up_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+    
+    # Audit fields - WHO made the change and WHEN
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="lead_updates"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ["-created_at"]  # Most recent first
+        verbose_name = "Lead History"
+        verbose_name_plural = "Lead Histories"
+        indexes = [
+            models.Index(fields=['lead', '-created_at']),  # Optimize queries
+        ]
+    
+    def __str__(self):
+        return f"{self.lead.name} - {self.get_status_display()} - {self.created_at.strftime('%d %b %Y, %I:%M %p')}"
+    
+    def get_changes_summary(self):
+        """Helper method to get a quick summary of what changed"""
+        changes = []
+        if self.status:
+            changes.append(f"Status: {self.get_status_display()}")
+        if self.agent_note:
+            changes.append(f"Note added")
+        if self.follow_up_at:
+            changes.append(f"Follow-up scheduled")
+        return ", ".join(changes) if changes else "Updated"
