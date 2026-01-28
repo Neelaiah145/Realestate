@@ -33,12 +33,36 @@
             <td>{{ lead.assigned_at|date:"d M Y - h:i A" }}</td>
             <td>{{ lead.updated_at|date:"d M Y - h:i A" }}</td>
             <td>
-                <a href="{% url 'lead_detail' lead.id %}" class="action-link">👁 View</a>
+                <a href="{% url 'lead_detail' lead.id %}" class="action-link" title="View">👁</a> |
 
                 {% if perms.leads.can_update_lead %}
-                | <a href="{% url 'update_lead_status' lead.id %}" class="action-link">
+                <a href="{% url 'update_lead_status' lead.id %}" class="action-link" title="Update">
                     Update
-                  </a>
+                </a> |
+                {% endif %}
+
+                {% if request.user.role == "agent" %}
+                <a href="{% url 'move_lead' lead.id %}" class="action-link">
+                    Move
+                </a> |
+                {% endif %}
+
+                {% if perms.leads.can_book_lead %}
+                <a href="#" class="action-link booking-link" title="Booking">
+                    Booking
+                </a> |
+                {% endif %}
+
+                {% if perms.leads.can_delete_lead %}
+                <form method="post"
+                      action="{% url 'delete_lead' lead.id %}"
+                      style="display:inline;"
+                      onsubmit="return confirm('Delete this lead?');">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn" title="Delete">
+                        Delete
+                    </button>
+                </form>
                 {% endif %}
             </td>
         </tr>
