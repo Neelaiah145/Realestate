@@ -176,8 +176,8 @@ def delete_user(request, user_id):
 
 # base file for html code to use all html files
 
-def base(request):
-    return render(request,'base.html')
+# def base(request):
+#     return render(request,'base.html')
 
 
 
@@ -191,7 +191,7 @@ def base(request):
 
 
 
-# assocayed dajsbaird page
+# assocayed dashboard page
 @login_required
 def associate_dashboard_view(request):
     return render(request,"associate/associate_dashboard.html",)
@@ -213,7 +213,7 @@ def create_associate(request):
             username=request.POST["username"],
             password=request.POST["password"],
             role="associate",
-            parent_agent=request.user   # 🔥 KEY LINE
+            parent_agent=request.user   
         )
         return redirect("agent_dashboard")
 
