@@ -1,0 +1,285 @@
+{% extends "admin_base.html" %}
+{% load static %}
+
+{% block title %}Property Management{% endblock %}
+
+{% block content %}
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.page-header h2 {
+font-size: 24px !important;
+    font-weight: 600 !important;
+    margin-bottom: 20px !important
+}
+
+.btn-add {
+    background: #2563eb;
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+
+.filter-box {
+    background: #ffffff;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+.filter-box input,
+.filter-box select {
+    padding: 8px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.filter-box button {
+    background: #4f46e5;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.leads-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.leads-table thead {
+    background: #f9fafb;
+}
+
+.leads-table th {
+    padding: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.leads-table td {
+    padding: 14px;
+    font-size: 14px;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.leads-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.prop-img {
+    width: 80px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+
+.status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.for_rent { background: #0ea5e9; }
+.for_sale { background: #22c55e; }
+.sold { background: #ef4444; }
+
+
+.action-btn a {
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-right: 6px;
+}
+
+.edit { background: #2563eb; color: #fff; }
+.delete { background: #dc2626; color: #fff; }
+
+
+.empty {
+    text-align: center;
+    color: #9ca3af;
+    padding: 28px;
+    font-size: 14px;
+}
+
+
+.pagination-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.pagination {
+    list-style: none;
+    display: flex;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination a {
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    color: #111827;
+}
+
+.pagination a:hover {
+    background: #f3f4f6;
+}
+
+.pagination .active {
+    padding: 6px 12px;
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+</style>
+
+
+<div class="page-header">
+    <h2>Properties</h2>
+    {% if perms.products.add_property %}
+    <a href="{% url 'property_create' %}" class="btn-add">+ Add Property</a>
+    {% endif %}
+</div>
+
+
+<form method="get" class="filter-box">
+    <input type="number" name="min_price" placeholder="Min Price" value="{{ request.GET.min_price }}">
+    <input type="number" name="max_price" placeholder="Max Price" value="{{ request.GET.max_price }}">
+    <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+    <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+
+    <select name="status">
+        <option value="">All Status</option>
+        <option value="for_rent" {% if request.GET.status == "for_rent" %}selected{% endif %}>For Rent</option>
+        <option value="for_sale" {% if request.GET.status == "for_sale" %}selected{% endif %}>For Sale</option>
+        <option value="sold" {% if request.GET.status == "sold" %}selected{% endif %}>Sold</option>
+    </select>
+
+    <button type="submit">Filter</button>
+</form>
+
+
+<table class="leads-table">
+    <thead>
+        <tr>
+            <th>Image</th>
+            <th>Property ID</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Price</th>
+            <th>City</th>
+            <th>Area</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in properties %}
+        <tr>
+            <td>
+                {% if p.primary_image %}
+                    <img src="{{ p.primary_image.image.url }}" class="prop-img">
+                {% else %}
+                    <img src="{% static 'img/no-image.png' %}" class="prop-img">
+                {% endif %}
+            </td>
+            <td>{{ p.property_id }}</td>
+            <td>{{ p.property_type|title }}</td>
+            <td>
+                <span class="status {{ p.property_status }}">
+                    {{ p.get_property_status_display }}
+                </span>
+            </td>
+            <td>₹ {{ p.price }}</td>
+            <td>{{ p.city }}</td>
+            <td>{{ p.area }}</td>
+            <td class="action-btn">
+                <a href="{% url 'about_property' p.id %}" class="about"> 👁</a>
+
+                    {% if perms.products.change_property %}
+                <a href="{% url 'property_update' p.id %}" class="edit">Edit</a>
+                {% endif %}
+
+                   {% if perms.products.delete_property %}
+                <a href="{% url 'property_delete' p.id %}" class="delete">Delete</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" class="empty">No properties found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% if properties.has_other_pages %}
+<div class="pagination-wrap">
+    <ul class="pagination">
+
+        {% if properties.has_previous %}
+        <li>
+            <a href="?page={{ properties.previous_page_number }}&{{ request.GET.urlencode }}">‹</a>
+        </li>
+        {% endif %}
+
+        {% for num in properties.paginator.page_range %}
+            {% if num <= 2 %}
+                {% if properties.number == num %}
+                <li><span class="active">{{ num }}</span></li>
+                {% else %}
+                <li>
+                    <a href="?page={{ num }}&{{ request.GET.urlencode }}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if properties.has_next %}
+        <li>
+            <a href="?page={{ properties.next_page_number }}&{{ request.GET.urlencode }}">›</a>
+        </li>
+        {% endif %}
+
+    </ul>
+</div>
+{% endif %}
+
+{% endblock %}

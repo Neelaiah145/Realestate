@@ -1,4 +1,4 @@
-{% extends "agent_base.html" %}
+{% extends "admin_base.html" %}
 {% load static %}
 
 {% block title %}Agent Leads{% endblock %}
@@ -61,7 +61,6 @@
             <th>Status</th>
             <th>Associate</th>
             <th>Assigned At</th>
-            
             <th>Updated At</th>
             <th>Site Visit Schedule</th>
             <th>Action</th>
@@ -80,11 +79,11 @@
             <!-- ASSOCIATE COLUMN -->
             <td>
                 {% if lead.assigned_associate %}
-                    <span style="font-weight:500; color:#2563eb;">
-                        {{ lead.assigned_associate.username }}
-                    </span>
+                <span style="font-weight:500; color:#2563eb;">
+                    {{ lead.assigned_associate.username }}
+                </span>
                 {% else %}
-                    <span style="color:#9ca3af;">—</span>
+                <span style="color:#9ca3af;">—</span>
                 {% endif %}
             </td>
 
@@ -95,21 +94,19 @@
             <!-- visiting schedule -->
             <td style="text-align:center;">
                 {% if lead.site_visit_at %}
-                <a href="{% url 'set_shedule' lead.id %}"
-                   class="action-link site-visit-done"
-                   title="Reschedule Site Visit">
+                <a href="{% url 'set_shedule' lead.id %}" class="action-link site-visit-done"
+                    title="Reschedule Site Visit">
                     Site Visit Scheduled
                 </a>
                 {% else %}
-                <a href="{% url 'set_shedule' lead.id %}"
-                   class="action-link site-visit-pending"
-                   title="Schedule Site Visit">
+                <a href="{% url 'set_shedule' lead.id %}" class="action-link site-visit-pending"
+                    title="Schedule Site Visit">
                     Site Visit Schedule
                 </a>
                 {% endif %}
             </td>
 
-            <!-- adctions -->
+            <!-- actions -->
             <td>
                 <a href="{% url 'lead_detail' lead.id %}" class="action-link" title="View">👁</a> |
 
@@ -132,15 +129,9 @@
                 {% endif %}
 
                 {% if perms.leads.can_delete_lead %}
-                <form method="post"
-                      action="{% url 'delete_lead' lead.id %}"
-                      style="display:inline;"
-                      onsubmit="return confirm('Delete this lead?');">
-                    {% csrf_token %}
-                    <button type="submit" class="delete-btn" title="Delete">
-                        Delete
-                    </button>
-                </form>
+                <a href="{% url 'delete_lead' lead.id %}" class="delete-btn" title="Delete">
+                    Delete
+                </a>
                 {% endif %}
             </td>
         </tr>
@@ -158,17 +149,68 @@
 
 <!-- set other page/search bar  -->
 {% if leads.has_other_pages %}
-<div class="pagination">
-    {% for num in leads.paginator.page_range %}
-    {% if leads.number == num %}
-    <span class="page-active">{{ num }}</span>
-    {% else %}
-    <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}" class="page-link">
-        {{ num }}
-    </a>
-    {% endif %}
-    {% endfor %}
+<div style="display:flex; justify-content:flex-end; margin-top:20px;">
+    <ul style="list-style:none; display:flex; gap:8px; padding:0; margin:0;">
+
+        <!-- Previous -->
+        {% if leads.has_previous %}
+        <li>
+            <a href="?page={{ leads.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}"
+                style="padding:6px 12px; border:1px solid #ddd; text-decoration:none;">
+                ‹
+            </a>
+        </li>
+        {% endif %}
+
+        <!-- Page 1 -->
+        {% if leads.paginator.num_pages >= 1 %}
+        {% if leads.number == 1 %}
+        <li>
+            <span style="padding:6px 12px; background:#2563eb; color:#fff; border-radius:4px;">
+                1
+            </span>
+        </li>
+        {% else %}
+        <li>
+            <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}"
+                style="padding:6px 12px; border:1px solid #ddd; text-decoration:none;">
+                1
+            </a>
+        </li>
+        {% endif %}
+        {% endif %}
+
+        <!-- Page 2 -->
+        {% if leads.paginator.num_pages >= 2 %}
+        {% if leads.number == 2 %}
+        <li>
+            <span style="padding:6px 12px; background:#2563eb; color:#fff; border-radius:4px;">
+                2
+            </span>
+        </li>
+        {% else %}
+        <li>
+            <a href="?page=2{% if search_query %}&q={{ search_query }}{% endif %}"
+                style="padding:6px 12px; border:1px solid #ddd; text-decoration:none;">
+                2
+            </a>
+        </li>
+        {% endif %}
+        {% endif %}
+
+        <!-- Next -->
+        {% if leads.has_next %}
+        <li>
+            <a href="?page={{ leads.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}"
+                style="padding:6px 12px; border:1px solid #ddd; text-decoration:none;">
+                ›
+            </a>
+        </li>
+        {% endif %}
+
+    </ul>
 </div>
+
 {% endif %}
 
 

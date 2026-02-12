@@ -1,13 +1,129 @@
-{% extends "agent_base.html" %}
+{% extends "admin_base.html" %}
+{% load static %}
+
+{% block title %}Delete Lead{% endblock %}
 
 {% block content %}
-<h2>Delete Lead</h2>
 
-<p>Are you sure you want to delete <strong>{{ lead.name }}</strong>?</p>
+<style>
+/* ===== CONTAINER ===== */
+.delete-container {
+    max-width: 500px;
+    margin: 80px auto;
+}
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" style="color:red;">Yes, Delete</button>
-    <a href="{% url 'agent_leads' %}">Cancel</a>
-</form>
+/* ===== CARD ===== */
+.delete-card {
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+/* ===== ICON ===== */
+.delete-icon {
+    font-size: 40px;
+    color: #dc2626;
+    margin-bottom: 16px;
+}
+
+/* ===== TITLE ===== */
+.delete-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 10px;
+}
+
+/* ===== TEXT ===== */
+.delete-text {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 18px;
+}
+
+/* ===== INFO BOX ===== */
+.lead-info {
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: #374151;
+}
+
+/* ===== ACTIONS ===== */
+.delete-actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+}
+
+/* ===== BUTTONS ===== */
+.btn-delete {
+    background: #dc2626;
+    color: #ffffff;
+    padding: 10px 22px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background: #b91c1c;
+}
+
+.btn-cancel {
+    background: #e5e7eb;
+    color: #111827;
+    padding: 10px 22px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-cancel:hover {
+    background: #d1d5db;
+}
+</style>
+
+<div class="delete-container">
+    <div class="delete-card">
+
+        <!-- Warning Icon -->
+        <div class="delete-icon">⚠️</div>
+
+        <!-- Title -->
+        <h3>Delete Lead?</h3>
+
+        <!-- Message -->
+        <p class="delete-text">
+            This action cannot be undone.  
+            Are you sure you want to permanently delete this lead?
+        </p>
+
+        <!-- Lead Info -->
+        <div class="lead-info">
+            <strong>{{ lead.name }}</strong><br>
+            <span>{{ lead.phone }}</span>
+        </div>
+
+        <!-- Actions -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="delete-actions">
+                <button type="submit" class="btn-delete">
+                    Yes, Delete
+                </button>
+                <a href="{% url 'agent_leads' %}" class="btn-cancel">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
 {% endblock %}

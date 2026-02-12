@@ -1,0 +1,124 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<style>
+.page-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 12px;
+}
+.page-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 28px;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #374151;
+}
+input, select {
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+}
+input:focus, select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.btn-primary {
+    height: 44px;
+    padding: 0 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-secondary {
+    margin-left: 10px;
+    height: 44px;
+    padding: 0 30px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+.button-group {
+    margin-top: 20px;
+}
+</style>
+
+<div class="page-wrapper">
+
+<h2 class="page-title">Edit Agent</h2>
+
+<div class="card">
+<form method="POST">
+{% csrf_token %}
+
+<div class="form-group">
+    <label>Username</label>
+    <input type="text" name="username" value="{{ agent.username }}" required>
+</div>
+
+
+
+<div class="form-group">
+    <label>Phone</label>
+    <input type="text" name="phone" value="{{ agent.phone }}">
+</div>
+
+<div class="form-group">
+    <label>Role</label>
+    <select name="role">
+        {% for value, label in agent.Role.choices %}
+            {% if value != "superuser" %}
+            <option value="{{ value }}"
+                {% if agent.role == value %}selected{% endif %}>
+                {{ value }}
+            </option>
+            {% endif %}
+        {% endfor %}
+    </select>
+</div>
+
+<div class="form-group">
+    <label>New Password (leave blank to keep old)</label>
+    <input type="password" name="password">
+</div>
+
+<div class="button-group">
+    <button type="submit" class="btn-primary">
+        Update Agent
+    </button>
+
+    <a href="{% url 'admin_create_agent' %}" class="btn-secondary">
+        Cancel
+    </a>
+</div>
+
+</form>
+</div>
+
+</div>
+
+{% endblock %}

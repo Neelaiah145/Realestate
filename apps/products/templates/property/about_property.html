@@ -1,0 +1,302 @@
+{% extends "admin_base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+.page-wrap {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* 🔙 BACK BUTTON */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #2563eb;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.back-btn:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 6px;
+}
+
+.property-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.property-title {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.property-price {
+    font-size: 16px;
+    color: #16a34a;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.purchase-btn {
+    background: #22c55e;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.icon-row {
+    display: flex;
+    gap: 18px;
+    margin: 14px 0;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.icon-row span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.main-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 24px;
+}
+
+.main-image {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.thumb-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.thumb-row img {
+    width: 70px;
+    height: 55px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e5e7eb;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color:rgb(60, 58, 58) !important;
+}
+
+.description {
+    font-size: 14px;
+    color: #343940;
+    line-height: 1.6;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.stat-box {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+}
+
+.stat-box span {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.stat-box strong {
+    font-size: 16px;
+}
+
+.range-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.range-row strong {
+    display: block;
+}
+
+.section {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px;
+    margin-top: 24px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+}
+
+.field-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.label {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.value {
+    font-size: 14px;
+    font-weight: 600;
+}
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 14px;
+    margin-bottom: 14px;
+
+    font-size: 14px;
+    font-weight: 600;
+    color: #2563eb;
+
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+    background: #e0e7ff;
+    border-color: #6366f1;
+    color: #1e40af;
+    transform: translateX(-2px);
+}
+
+.btn-back:active {
+    transform: translateX(0);
+}
+
+
+</style>
+
+<div class="page-wrap">
+     <a href="{% url 'property_list' %}" class="btn-back">← Back </a>
+
+    <div class="breadcrumb">‹ SEARCH / PROPERTY</div>
+
+   
+        
+
+    <div class="property-header">
+        <div>
+            <div class="property-title">{{ property.address }}, {{ property.city }}</div>
+            <div class="property-price">Offers from ₹ 20,000</div>
+        </div>
+         
+        <a href="#" class="purchase-btn">PURCHASE THIS PROPERTY →</a>
+    </div>
+
+    <div class="icon-row">
+        <span>🛏 {{ property.beds }} Beds</span>
+        <span>🛁 {{ property.baths }} Baths</span>
+        <span>🚗 {{ property.garage }} Parks</span>
+        <span>📐 {{ property.property_size }}</span>
+    </div>
+
+    <div class="main-card">
+
+        <div>
+            {% with property.images.first as img %}
+                {% if img %}
+                    <img src="{{ img.image.url }}" class="main-image">
+                {% else %}
+                    <img src="{% static 'img/no-image.png' %}" class="main-image">
+                {% endif %}
+            {% endwith %}
+
+            <div class="thumb-row">
+                {% for img in property.images.all %}
+                    <img src="{{ img.image.url }}">
+                {% endfor %}
+            </div>
+        </div>
+
+        <div>
+            <div class="section-title">Snap Up This Great Investment</div>
+            <p class="description">
+                {{ property.description|default:"No description available." }}
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span>Median Price</span>
+                    <strong>₹ {{ property.price }}</strong>
+                </div>
+                <div class="stat-box">
+                    <span>Potential Yield</span>
+                    <strong>5.2%</strong>
+                </div>
+                <div class="stat-box">
+                    <span>Listed</span>
+                    <strong>{{ property.created_at|timesince }} ago</strong>
+                </div>
+            </div>
+
+            <div class="range-row">
+                <div><span>Low Range</span><strong>₹ 3.4M</strong></div>
+                <div><span>Mid Range</span><strong>₹ 3.6M</strong></div>
+                <div><span>High Range</span><strong>₹ 3.9M</strong></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="section">
+        <h3>Property Details</h3>
+        <div class="field-grid">
+            <div><div class="label">Property ID</div><div class="value">{{ property.property_id }}</div></div>
+            <div><div class="label">Type</div><div class="value">{{ property.property_type }}</div></div>
+            <div><div class="label">Status</div><div class="value">{{ property.get_property_status_display }}</div></div>
+            <div><div class="label">Area</div><div class="value">{{ property.area }}</div></div>
+            <div><div class="label">City</div><div class="value">{{ property.city }}</div></div>
+            <div><div class="label">State</div><div class="value">{{ property.state }}</div></div>
+            <div><div class="label">Country</div><div class="value">{{ property.country }}</div></div>
+            <div><div class="label">Year Built</div><div class="value">{{ property.year_built }}</div></div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

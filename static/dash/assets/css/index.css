@@ -7898,7 +7898,7 @@ td {
 .action-menu {
   position: relative;
 }
-.action-btn {
+/* .action-btn {
   width: 36px;
   height: 36px;
   border-radius: 10px;
@@ -7909,7 +7909,7 @@ td {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
-}
+} */
 .action-btn:hover {
   background: var(--bg);
   border-color: var(--primary);
@@ -11167,7 +11167,7 @@ body {
   padding: 14px 16px;
   margin: 12px 0px;
   border-radius: 16px;
-  color: var(--muted);
+  color: #4d4d50ed;
   text-decoration: none;
   transition: all 0.3s ease;
   font-weight: 500;

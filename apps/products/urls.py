@@ -1,13 +1,12 @@
 from django.urls import path
-from . import views
+from .views import property_list,property_create,property_update,property_delete,about_property
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    # Property URLs
-    path('property/add/', views.add_property, name='add_property'),
-    path('property/list/', views.property_list, name='property_list'),
-    path('property/details/', views.property_details, name='property_details'),
-    path('property/details/<int:property_id>/', views.property_details, name='property_details_id'),
-    path('property/edit/<int:property_id>/', views.edit_property, name='edit_property'),
-    path('property/delete/<int:property_id>/', views.delete_property, name='delete_property'),
-    path('property/<int:property_id>/add-feature/', views.add_property_feature, name='add_property_feature'),
-]
+    path("properties/", property_list, name="property_list"),
+    path("properties/create/", property_create, name="property_create"),
+    path("properties/<int:pk>/update/", property_update, name="property_update"),
+    path("properties/<int:pk>/delete/", property_delete, name="property_delete"),
+    path("properties/<int:pk>/about/", about_property, name="about_property"),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

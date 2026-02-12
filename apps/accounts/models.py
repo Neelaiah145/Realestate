@@ -25,7 +25,6 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
 
-
     class Role(models.TextChoices):
         SUPERUSER = "superuser", "Superuser"
         AGENT = "agent", "Agent"
@@ -34,11 +33,12 @@ class User(AbstractUser):
  
     username = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=15, blank=True, null=True)
+    phone = models.CharField(max_length=15, blank=True, null=True,unique=True)
     profile_image = models.ImageField(
         upload_to="profile_images/",
         blank=True,
-        null=True
+        null=True,
+        default="profile_images/user_img.png"
     )
 
 
@@ -48,7 +48,7 @@ class User(AbstractUser):
         default=Role.AGENT
     )
     
-    # new column for associates
+ 
     parent_agent = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
@@ -63,3 +63,18 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    class Meta:
+            permissions = [
+                ('view_dashboard',"Permisison for Dashboard(Menu)"),
+                ('view_create_associate',"Permission for create_agent(Menu)"),
+                
+        ]    
+
+
+
+class OTP(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=15)
+    otp = models.CharField(max_length=6)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)

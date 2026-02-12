@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import admin_leads,agent_leads,submit_lead,lead_success,agent_leads,update_lead_status,delete_lead,lead_detail,booking_lead
-from .views import manage_permissions,schedule_lead,move_lead,associate_leads
-
+from .views import schedule_lead,move_lead,associate_leads,contacts,delete_contact,edit_contact
+from apps.leads.permissions import manage_permissions
 urlpatterns = [
  
     path('agent_leads/',agent_leads,name = 'agent_leads'),
@@ -16,6 +16,10 @@ urlpatterns = [
     path('set_shedule/<int:lead_id>/',schedule_lead,name='set_shedule'),
     path('lead/<int:lead_id>/move_lead/',move_lead,name='move_lead'),
     path('associate/associate_leads/',associate_leads,name = 'associate_leads'),
+    path('contacts/',contacts,name = 'contacts'),
+    path('delete_contact/<int:id>/',delete_contact,name='delete_contact'),
+    path('edit_contact/<int:id>/',edit_contact,name = 'edit_contact'),
+  
     
 
 

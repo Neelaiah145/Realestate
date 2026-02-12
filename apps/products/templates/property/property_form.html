@@ -1,0 +1,335 @@
+{% extends "admin_base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .page-container {
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    .form-card {
+        background: #fff;
+        padding: 28px;
+        border-radius: 14px;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, .08);
+    }
+
+    /* Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+    }
+
+    .page-header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .btn-back {
+        text-decoration: none;
+        font-size: 14px;
+        color: #2563eb;
+        font-weight: 600;
+    }
+
+    /* Sections */
+    .section {
+        margin-bottom: 36px;
+    }
+
+    .section h3 {
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 18px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Grid */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 11px 12px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        font-size: 14px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: #2563eb;
+        outline: none;
+    }
+
+    .form-group small {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 4px;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 110px;
+    }
+
+    /* Upload */
+    .upload-box {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 26px;
+        text-align: center;
+        background: #f9fafb;
+    }
+
+    .upload-box input {
+        display: none;
+    }
+
+    .upload-label {
+        cursor: pointer;
+        color: #2563eb;
+        font-weight: 600;
+    }
+
+    /* Images */
+    .image-preview {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 14px;
+    }
+
+    .image-card {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+    }
+
+    .image-card img {
+        width: 100%;
+        height: 110px;
+        object-fit: cover;
+    }
+
+    /* Actions */
+    .form-actions {
+        display: flex;
+        gap: 16px;
+        margin-top: 36px;
+    }
+
+    .btn-save {
+        background: #2563eb;
+        color: #fff;
+        padding: 12px 28px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-save:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-cancel {
+        background: #6b7280;
+        color: #fff;
+        padding: 12px 28px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+</style>
+
+<div class="page-container">
+    <div class="form-card">
+
+        <div class="page-header">
+            <h2>{% if property %}Update{% else %}Create{% endif %} Property</h2>
+            <a href="{% url 'property_list' %}" class="btn-back">← Back to Properties</a>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- BASIC DETAILS -->
+            <div class="section">
+                <h3>Basic Details</h3>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Property Type</label>
+                        <select name="property_type">
+                            <option value="">Select type</option>
+                            <option value="office">Office</option>
+                            <option value="villa">Villa</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="house">House</option>
+                            <option value="commercial">Commercial</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="property_status">
+                            <option value="for_rent">For Rent</option>
+                            <option value="for_sale">For Sale</option>
+                            <option value="sold">Sold</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Property Price</label>
+                        <input type="number" name="property_price" step="0.01" required>
+                        <small>Numbers only (no commas)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Listed Price</label>
+                        <input type="number" name="price" step="0.01" required>
+                        <small>Example: 2500000</small>
+                    </div>
+                </div>
+                <!-- ROOM DETAILS -->
+                <div class="section">
+                    <h3>Room Details</h3>
+
+                    <div class="grid">
+                        <div class="form-group">
+                            <label>Total Rooms</label>
+                            <input type="number" name="max_rooms" min="0" value="{{ property.max_rooms|default:1 }}"
+                                required>
+                            <small>Enter total rooms (numbers only)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Bedrooms</label>
+                            <input type="number" name="beds" min="0" value="{{ property.beds|default:1 }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Bathrooms</label>
+                            <input type="number" name="baths" min="0" value="{{ property.baths|default:1 }}" required>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group" style="margin-top:16px;">
+                    <label>Description</label>
+                    <textarea name="description"
+                        placeholder="Write a brief, attractive description of the property"></textarea>
+                </div>
+            </div>
+
+
+            <div class="grid">
+                <div class="form-group">
+                    <label>Area (Sq. Ft / Sq. Yards)</label>
+                    <input name="area" required value="{{ property.area|default:'' }}">
+                    <small>Example: 1200 sq ft</small>
+                </div>
+                <div class="form-group">
+                    <label>Garage</label>
+                    <input type="number" name="garage" min="0" value="{{ property.garage|default:0 }}">
+                    <small>Number of parking spaces</small>
+                </div>
+                <div class="form-group">
+                    <label>Premiere / Landmark</label>
+                    <input name="premiere" required value="{{ property.premiere|default:'' }}">
+                    <small>Nearby landmark or project name</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Property Size</label>
+                <input name="property_size" value="{{ property.property_size|default:'' }}"
+                    placeholder="Example: 1200 sq ft">
+                <small>Total built-up area (optional)</small>
+            </div>
+
+            <!-- LOCATION -->
+            <div class="section">
+                <h3>Location</h3>
+                <div class="grid">
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input name="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <input name="state">
+                    </div>
+                    <div class="form-group">
+                        <label>Country</label>
+                        <input name="country" value="India">
+                    </div>
+                    <div class="form-group">
+                        <label>Zip Code</label>
+                        <input name="zip_code">
+                    </div>
+                    <div class="form-group">
+                        <label>Area Name</label>
+                        <input name="area_name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- IMAGES -->
+            <div class="section">
+                <h3>Property Images</h3>
+                <div class="upload-box">
+                    <label class="upload-label">
+                        <input type="file" name="images" multiple>
+                        Click to upload images (JPG / PNG)
+                    </label>
+                </div>
+
+                {% if images %}
+                <div class="image-preview">
+                    {% for img in images %}
+                    <div class="image-card">
+                        <img src="{{ img.image.url }}">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">Save Property</button>
+                <a href="{% url 'property_list' %}" class="btn-cancel">Cancel</a>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+{% endblock %}

@@ -8,3 +8,5 @@ myvenv/
 env
 
 media
+utils.py
+utils

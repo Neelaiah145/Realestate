@@ -90,8 +90,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'realestate.wsgi.application'
 
+LANGUAGE_CODE = "en-us"
+
+TIME_ZONE = "Asia/Kolkata"
+
+USE_I18N = True
+
 USE_TZ = True
-TIME_ZONE = 'Asia/Kolkata'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

@@ -1,4 +1,4 @@
-{% extends "associate_base.html" %}
+{% extends "admin_base.html" %}
 {% load static %}
 
 {% block title %}Associate Dashboard{% endblock %}
@@ -7,9 +7,7 @@
 
 <link rel="stylesheet" href="{% static 'leads/style.css' %}">
 
-<h2 class="page-header">  Welcome to Associate Dashboard
-
-</h2>
+<h2 class="page-header"> Welcome to {{ request.user.username }} - Associate Dashboard </h2>
 
 
 

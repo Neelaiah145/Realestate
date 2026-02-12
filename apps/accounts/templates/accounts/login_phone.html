@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login with Phone</title>
+</head>
+<body>
+
+<h2>Login with Phone</h2>
+
+<form method="post" action="{% url 'send_otp' %}">
+    {% csrf_token %}
+
+    <input
+        type="tel"
+        name="phone"
+        placeholder="Enter phone number"
+        required
+    >
+
+    <button type="submit">Send OTP</button>
+
+    {% for message in messages %}
+        <p style="color:red">{{ message }}</p>
+    {% endfor %}
+</form>
+
+</body>
+</html>

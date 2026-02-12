@@ -1,535 +1,303 @@
-{% extends "associate_base.html" %}
+{% extends "admin_base.html" %}
 {% load static %}
 
 {% block title %}Lead Details{% endblock %}
-
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'leads/style.css' %}">
-
-<div class="details-container">
-    <div class="page-header-section">
-        <h2 class="page-header">Details</h2>
-        <p class="page-subtitle">Plots Booking Site</p>
-    </div>
-
-    <!-- Back Button -->
-    <div class="mb-3">
-        <a href="{{ back_url }}" class="btn btn-secondary">← Back to Leads</a>
-    </div>
-
-    <!-- Lead Details Section -->
-    <div class="lead-details-card">
-        <h3 class="section-title">Lead Details</h3>
-        
-        <div class="agent-info">
-            <p><strong>Agent Name:</strong> {{ lead.assigned_agent.username|default:"Not Assigned" }}</p>
-        </div>
-
-        <table class="details-table">
-            <tr>
-                <td class="label">NAME</td>
-                <td class="value">{{ lead.name }}</td>
-            </tr>
-            <tr>
-                <td class="label">EMAIL</td>
-                <td class="value">{{ lead.email|default:"N/A" }}</td>
-            </tr>
-            <tr>
-                <td class="label">STATUS</td>
-                <td class="value">
-                    <span class="badge badge-{{ lead.status }}">{{ lead.get_status_display }}</span>
-                </td>
-            </tr>
-            <tr>
-                <td class="label">PROPERTY TYPE</td>
-                <td class="value">{{ lead.get_property_type_display|default:"N/A" }}</td>
-            </tr>
-            <tr>
-                <td class="label">PREFERRED LOCATION</td>
-                <td class="value">{{ lead.preferred_location|default:"N/A" }}</td>
-            </tr>
-            <tr>
-                <td class="label">BUDGET</td>
-                <td class="value">
-                    {% if lead.budget_min and lead.budget_max %}
-                        ₹{{ lead.budget_min|floatformat:0 }} - ₹{{ lead.budget_max|floatformat:0 }}
-                    {% elif lead.budget_min %}
-                        Min: ₹{{ lead.budget_min|floatformat:0 }}
-                    {% elif lead.budget_max %}
-                        Max: ₹{{ lead.budget_max|floatformat:0 }}
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td class="label">INTEREST LEVEL</td>
-                <td class="value">{{ lead.get_interest_level_display|default:"N/A" }}</td>
-            </tr>
-            <tr>
-                <td class="label">NEXT ACTION</td>
-                <td class="value">{{ lead.next_action|default:"N/A" }}</td>
-            </tr>
-            <tr>
-                <td class="label">CLIENT RESPONSE</td>
-                <td class="value">{{ lead.client_response|default:"N/A" }}</td>
-            </tr>
-            <tr>
-                <td class="label">AGENT NOTE</td>
-                <td class="value">{{ lead.agent_note|default:"N/A" }}</td>
-            </tr>
-            {% if lead.follow_up_at %}
-            <tr>
-                <td class="label">FOLLOW-UP SCHEDULED</td>
-                <td class="value">{{ lead.follow_up_at|date:"d M Y, h:i A" }}</td>
-            </tr>
-            {% endif %}
-        </table>
-
-        <!-- Lead Creation Info -->
-        <div class="creation-info">
-            <p class="text-muted">
-                <strong>Lead Created:</strong> {{ lead.created_at|date:"d M Y, h:i A" }}
-            </p>
-        </div>
-    </div>
-
-    <!-- 📋 LEAD HISTORY SECTION - THIS IS WHAT'S MISSING -->
-    <div class="lead-history-section">
-        <h3 class="section-title">
-            📋 Lead History 
-            <span class="badge badge-secondary">{{ lead.histories.count }} Update{{ lead.histories.count|pluralize }}</span>
-        </h3>
-        
-        {% if lead.histories.all %}
-            <div class="timeline">
-                {% for h in lead.histories.all %}
-                <div class="history-entry {% if forloop.first %}latest-entry{% endif %}">
-                    <!-- Header: Timestamp and User -->
-                    <div class="history-header">
-                        <div class="history-date">
-                            <strong class="date-main">{{ h.created_at|date:"d M Y" }}</strong>
-                            <span class="time-main">at {{ h.created_at|date:"h:i A" }}</span>
-                        </div>
-                        {% if h.updated_by %}
-                        <div class="history-user">
-                            <small class="text-muted">Updated by</small>
-                            <strong>{{ h.updated_by.get_full_name|default:h.updated_by.username }}</strong>
-                        </div>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Status Badge -->
-                    <div class="history-status">
-                        <span class="badge badge-lg badge-{{ h.status }}">
-                            {{ h.get_status_display }}
-                        </span>
-                        
-                        {% if h.interest_level %}
-                        <span class="badge badge-lg badge-interest-{{ h.interest_level }}">
-                            Interest: {{ h.get_interest_level_display }}
-                        </span>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Agent Note (Most Important) -->
-                    {% if h.agent_note %}
-                    <div class="history-field">
-                        <strong>📝 Agent Note:</strong>
-                        <p class="field-content">{{ h.agent_note }}</p>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Client Response -->
-                    {% if h.client_response %}
-                    <div class="history-field">
-                        <strong>💬 Client Response:</strong>
-                        <p class="field-content">{{ h.client_response }}</p>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Next Action -->
-                    {% if h.next_action %}
-                    <div class="history-field">
-                        <strong>🎯 Next Action:</strong>
-                        <span class="field-inline">{{ h.next_action }}</span>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Property Details -->
-                    {% if h.property_type or h.preferred_location %}
-                    <div class="history-field">
-                        <strong>🏘️ Property:</strong>
-                        {% if h.property_type %}
-                            <span class="field-inline">{{ h.get_property_type_display }}</span>
-                        {% endif %}
-                        {% if h.preferred_location %}
-                            <span class="field-inline">in {{ h.preferred_location }}</span>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Budget -->
-                    {% if h.budget_min or h.budget_max %}
-                    <div class="history-field">
-                        <strong>💰 Budget:</strong>
-                        {% if h.budget_min and h.budget_max %}
-                            <span class="field-inline">₹{{ h.budget_min|floatformat:0 }} - ₹{{ h.budget_max|floatformat:0 }}</span>
-                        {% elif h.budget_min %}
-                            <span class="field-inline">Min: ₹{{ h.budget_min|floatformat:0 }}</span>
-                        {% elif h.budget_max %}
-                            <span class="field-inline">Max: ₹{{ h.budget_max|floatformat:0 }}</span>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Purchase Timeline -->
-                    {% if h.purchase_timeline %}
-                    <div class="history-field">
-                        <strong>⏰ Timeline:</strong>
-                        <span class="field-inline">{{ h.get_purchase_timeline_display }}</span>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Follow-up Scheduled -->
-                    {% if h.follow_up_at %}
-                    <div class="history-field">
-                        <strong>📅 Follow-up Scheduled:</strong>
-                        <span class="field-inline follow-up-date">{{ h.follow_up_at|date:"d M Y, h:i A" }}</span>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Objections -->
-                    <!-- {% if h.objections %}
-                    <div class="history-field">
-                        <strong>⚠️ Objections:</strong>
-                        <p class="field-content objection-text">{{ h.objections }}</p>
-                    </div>
-                    {% endif %} -->
-                </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-history">
-                <p class="empty-icon">📝</p>
-                <p class="empty-title">No update history available yet</p>
-                <p class="empty-subtitle">History will appear here after the first update is made to this lead.</p>
-            </div>
-        {% endif %}
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="action-buttons">
-        {% if perms.leads.can_update_lead %}
-        <a href="{% url 'update_lead_status' lead.id %}" class="btn btn-primary">
-            ✏️ Update Lead
-        </a>
-        {% endif %}
-        
-        <a href="{{ back_url }}" class="btn btn-secondary">
-            ← Back
-        </a>
-    </div>
-</div>
-
-<!-- Styles for History Section -->
 <style>
-.details-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+
+.lead-page {
+    max-width: 1100px;
+    margin: 24px auto 60px;
 }
 
-.page-header-section {
-    margin-bottom: 20px;
-}
 
-.page-subtitle {
-    color: #6b7280;
-    margin-top: 5px;
-}
-
-.lead-details-card {
-    background: white;
-    border-radius: 8px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.section-title {
-    font-size: 1.5em;
-    margin-bottom: 16px;
-    color: #1f2937;
-}
-
-.agent-info {
-    background: #f3f4f6;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-}
-
-.details-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.details-table tr {
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.details-table td {
-    padding: 12px 16px;
-}
-
-.details-table .label {
-    font-weight: 600;
-    color: #6b7280;
-    width: 200px;
-    text-transform: uppercase;
-    font-size: 0.85em;
-}
-
-.details-table .value {
-    color: #1f2937;
-}
-
-.creation-info {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #e5e7eb;
-}
-
-/* Lead History Section */
-.lead-history-section {
-    background: white;
-    border-radius: 8px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.timeline {
-    margin-top: 20px;
-}
-
-.history-entry {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 16px;
-    transition: all 0.2s;
-}
-
-.history-entry:hover {
-    background: #f3f4f6;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.history-entry.latest-entry {
-    border-left: 4px solid #3b82f6;
-    background: #eff6ff;
-}
-
-.history-header {
+.lead-header {
     display: flex;
     justify-content: space-between;
-    align-items: start;
-    margin-bottom: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.lead-header h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+.back-link {
+    background: #e5e7eb;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #111827;
+}
+.back-link:hover { background: #d1d5db; }
+
+
+.lead-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    margin-bottom: 24px;
 }
 
-.history-date .date-main {
-    color: #3b82f6;
-    font-size: 1.1em;
+
+.section {
+    margin-bottom: 28px;
+}
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 6px;
 }
 
-.history-date .time-main {
+
+.info-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 40px;
+}
+
+.info-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-size: 0.8rem;
     color: #6b7280;
-    font-size: 0.9em;
-    margin-left: 8px;
-}
-
-.history-user {
-    text-align: right;
-}
-
-.history-status {
-    margin-bottom: 16px;
-}
-
-.history-field {
-    margin-bottom: 12px;
-}
-
-.history-field strong {
-    color: #374151;
-    display: block;
     margin-bottom: 4px;
 }
 
-.field-content {
-    margin: 4px 0 0 20px;
-    color: #4b5563;
-    line-height: 1.5;
+.info-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #111827;
 }
 
-.field-inline {
-    margin-left: 8px;
-    color: #4b5563;
-}
 
-.objection-text {
-    color: #dc2626;
-}
-
-.follow-up-date {
-    color: #f59e0b;
-    font-weight: 600;
-}
-
-/* Status Badges */
 .badge {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.85em;
-    font-weight: 600;
     display: inline-block;
-}
-
-.badge-lg {
     padding: 6px 14px;
-    font-size: 0.9em;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
-.badge-new {
-    background: #dbeafe;
-    color: #1e40af;
-}
+.badge-info { background:#e0f2fe; color:#0369a1; }
+.badge-warn { background:#fef3c7; color:#92400e; }
 
-.badge-contacted {
-    background: #fed7aa;
-    color: #c2410c;
-}
 
-.badge-qualified {
-    background: #e9d5ff;
-    color: #7e22ce;
-}
+.followup-box {
 
-.badge-closed {
-    background: #d1fae5;
-    color: #065f46;
-}
 
-.badge-secondary {
-    background: #e5e7eb;
-    color: #374151;
-}
-
-.badge-interest-low {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-.badge-interest-medium {
-    background: #fef3c7;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-weight: 600;
     color: #92400e;
 }
 
-.badge-interest-high {
-    background: #dcfce7;
-    color: #166534;
+.update_user{
+    color:red;
 }
-
-/* Empty State */
-.empty-history {
-    text-align: center;
-    padding: 60px 20px;
-    background: #f9fafb;
-    border-radius: 8px;
-    border: 2px dashed #e5e7eb;
+.update_user1{color:black;
+    font-size:14px;}
+.history-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
 }
-
-.empty-icon {
-    font-size: 3em;
-    margin-bottom: 16px;
+.history-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #e5e7eb;
 }
+.history-item:last-child { border-bottom: none; }
 
-.empty-title {
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #374151;
+.history-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #6b7280;
     margin-bottom: 8px;
 }
 
-.empty-subtitle {
-    color: #6b7280;
-    font-size: 0.95em;
+.history-content p {
+    margin: 4px 0;
+    color: #374151;
 }
 
-/* Action Buttons */
-.action-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 24px;
-}
-
-.btn {
-    padding: 10px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-block;
-    transition: all 0.2s;
-}
-
-.btn-primary {
-    background: #3b82f6;
-    color: white;
-}
-
-.btn-primary:hover {
-    background: #2563eb;
-}
-
-.btn-secondary {
-    background: #6b7280;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #4b5563;
-}
-
-.text-muted {
-    color: #6b7280;
-}
-
-/* Responsive */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-    .history-header {
-        flex-direction: column;
-    }
-    
-    .history-user {
-        text-align: left;
-        margin-top: 8px;
-    }
-    
-    .details-table .label {
-        width: auto;
-        display: block;
-        padding-bottom: 4px;
-    }
-    
-    .details-table td {
-        display: block;
-        padding: 8px 16px;
+    .info-layout {
+        grid-template-columns: 1fr;
     }
 }
 </style>
+
+<div class="lead-page">
+
+  
+ 
+
+    <div class="lead-card">
+
+        <div class="section">
+            <div class="section-title">Basic Information</div>
+
+            <div class="info-layout">
+                <div class="info-block">
+                    <span class="info-label">Client Name</span>
+                    <span class="info-value">{{ lead.name }}</span>
+                </div>
+
+                <div class="info-block">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ lead.email|default:"N/A" }}</span>
+                </div>
+
+                <div class="info-block">
+                    <span class="info-label">Status</span>
+                    <span class="badge badge-status">{{ lead.get_status_display }}</span>
+                </div>
+
+
+                <div class="info-block">
+                    <span class="info-label">Phone Number</span>
+                    <span class="info-value">{{ lead.assigned_agent.phone}}</span>
+                </div>
+
+                <div class="info-block">
+                    <span class="info-label">Assigned Agent</span>
+                    <span class="info-value">{{ lead.assigned_agent.username }}</span>
+                </div>
+                
+
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Client Requirements</div>
+
+            <div class="info-layout">
+                <div class="info-block">
+                    <span class="info-label">Property Type</span>
+                    <span class="info-value">{{ lead.get_property_type_display|default:"N/A" }}</span>
+                </div>
+
+                <div class="info-block">
+                    <span class="info-label">Preferred Location</span>
+                    <span class="info-value">{{ lead.preferred_location|default:"N/A" }}</span>
+                </div>
+
+                <div class="info-block">
+                    <span class="info-label">Budget Range</span>
+                    <span class="info-value">
+                        {% if lead.budget_min or lead.budget_max %}
+                            ₹{{ lead.budget_min|default:"0"|floatformat:0 }} – ₹{{ lead.budget_max|default:"0"|floatformat:0 }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="info-block">
+                    <span class="info-label">Interest Level</span>
+                    <span class="info-value">{{ lead.get_interest_level_display|default:"N/A" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Follow-up & Action</div>
+
+            <div class="info-layout">
+                <div class="info-block">
+                    <span class="info-label">Next Action</span>
+                    <span class="info-value">{{ lead.next_action|default:"N/A" }}</span>
+                </div>
+
+                <div class="info-block">
+                    <span class="info-label">Lead Created</span>
+                    <span class="info-value">{{ lead.created_at|date:"d M Y, h:i A" }}</span>
+                </div>
+            </div>
+
+            {% if lead.follow_up_at %}
+            <div class="followup-box mt-3">
+                📅 Follow-up scheduled on {{ lead.follow_up_at|date:"d M Y, h:i A" }}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+<div class="history-card">
+    <div class="section-title">
+        Lead History ({{ lead.histories.count }})
+    </div>
+
+    {% for h in lead.histories.all %}
+    <div class="history-item">
+
+   
+        <div class="history-top">
+            <span>{{ h.created_at|date:"d M Y, h:i A" }}</span>
+            <span class="update_user"><span class="update_user1">Updated By - </span>{{ h.updated_by.username }}</span>
+        </div>
+
+        <div class="history-content">
+
+     
+            <div style="margin-bottom:6px;">
+                <span class="badge badge-info">
+                    {{ h.get_status_display }}
+                </span>
+
+                {% if h.interest_level %}
+                <span class="badge badge-warn">
+                    {{ h.get_interest_level_display }}
+                </span>
+                {% endif %}
+            </div>
+
+            {% if h.agent_note %}
+            <p><strong>Agent Note:</strong> {{ h.agent_note }}</p>
+            {% endif %}
+
+            {% if h.client_response %}
+            <p><strong>Client Response:</strong> {{ h.client_response }}</p>
+            {% endif %}
+
+            {% if h.next_action %}
+            <p>
+                <strong>Next Action:</strong>
+                {{ h.next_action }}
+            </p>
+            {% endif %}
+
+            {% if h.follow_up_at %}
+            <p>
+                <strong>Follow-up:</strong>
+                {{ h.follow_up_at|date:"d M Y, h:i A" }}
+            </p>
+            {% endif %}
+
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">No history available.</p>
+    {% endfor %}
+</div>
+
+
+</div>
+   <div class="lead-header">
+   
+        <a href="{{ back_url }}" class="back-link">← Back</a>
+    </div>
 
 {% endblock %}

@@ -1,218 +1,194 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import Property, PropertyImage, PropertyFeature
+from .models import Property,PropertyImage,PropertyFeature,PropertyLocation
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import permission_required
 
 
-@login_required
-def add_property(request):
-    """View to add a new property"""
-    if request.method == 'POST':
-        try:
-            # Get price value, use property_price if price is not provided
-            price_value = request.POST.get('price')
-            if not price_value:
-                price_value = request.POST.get('property_price')
-            
-            # Create property instance
-            property_instance = Property.objects.create(
-                property_type=request.POST.get('property_type'),
-                property_status=request.POST.get('property_status'),
-                property_price=request.POST.get('property_price'),
-                max_rooms=request.POST.get('max_rooms'),
-                beds=request.POST.get('beds'),
-                baths=request.POST.get('baths'),
-                area=request.POST.get('area'),
-                price=price_value,
-                premiere=request.POST.get('premiere'),
-                description=request.POST.get('description', ''),
-                address=request.POST.get('address'),
-                zip_code=request.POST.get('zip_code'),
-                city=request.POST.get('city'),
-                state=request.POST.get('state'),
-                country=request.POST.get('country'),
-                agent=request.user
-            )
-            
-            # Handle multiple image uploads
-            images = request.FILES.getlist('property_images')
-            if images:
-                for index, image in enumerate(images):
-                    PropertyImage.objects.create(
-                        property=property_instance,
-                        image=image,
-                        is_primary=(index == 0)  # First image is primary
-                    )
-            
-            messages.success(request, f'Property {property_instance.property_id} added successfully!')
-            return redirect('property_list')
-            
-        except Exception as e:
-            messages.error(request, f'Error adding property: {str(e)}')
-    
-    context = {
-        'page_title': 'Add Property'
-    }
-    return render(request, 'products/add_property.html', context)
 
 
 @login_required
 def property_list(request):
-    """View to display all properties"""
-    # Get all properties for the logged-in user
-    properties = Property.objects.all().prefetch_related('images', 'agent')
-    
-    # Sorting
-    sort_by = request.GET.get('sort', 'default')
-    if sort_by == 'price_low':
-        properties = properties.order_by('property_price')
-    elif sort_by == 'price_high':
-        properties = properties.order_by('-property_price')
-    elif sort_by == 'newest':
-        properties = properties.order_by('-created_at')
-    
-    # Pagination
-    paginator = Paginator(properties, 9)  # 9 properties per page
-    page_number = request.GET.get('page')
+    qs = Property.objects.prefetch_related("images").all()
+
+    if not request.user: #.is_superuser:
+        qs = qs.filter(agent=request.user)
+
+    min_price = request.GET.get("min_price")
+    max_price = request.GET.get("max_price")
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+    status = request.GET.get("status")
+
+    if min_price:
+        qs = qs.filter(price__gte=min_price)
+
+    if max_price:
+        qs = qs.filter(price__lte=max_price)
+
+    if start_date:
+        qs = qs.filter(created_at__date__gte=start_date)
+
+    if end_date:
+        qs = qs.filter(created_at__date__lte=end_date)
+
+    if status:
+        qs = qs.filter(property_status=status)
+
+ 
+    for p in qs:
+        p.primary_image = p.images.filter(is_primary=True).first()
+    paginator = Paginator(qs, 6)   # 6 properties per page
+    page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    
-    context = {
-        'page_title': 'Property List',
-        'properties': page_obj,
-        'total_properties': properties.count(),
-        'sort_by': sort_by
-    }
-    return render(request, 'products/property_list.html', context)
+    return render(request, "property/property_list.html", {
+        "properties": qs,
+         "properties": page_obj,
+         "page_title":"All Propertys"
+        
+    })
+ 
 
-
+@permission_required('products.add_property', raise_exception=True)
 @login_required
-def property_details(request, property_id=None):
-    """View to display property details"""
-    if property_id:
-        property_instance = get_object_or_404(Property, id=property_id)
-    else:
-        # Get the first property or show message
-        property_instance = Property.objects.first()
-        if not property_instance:
-            messages.info(request, 'No properties available. Please add a property first.')
-            return redirect('add_property')
-    
-    # Get all images for this property
-    images = property_instance.images.all()
-    
-    # Get features
-    features = property_instance.features.all()
-    
-    context = {
-        'page_title': f'Property Details - {property_instance.property_id}',
-        'property': property_instance,
-        'images': images,
-        'features': features
-    }
-    return render(request, 'products/property_details.html', context)
+def property_create(request):
+    if request.method == "POST":
+        prop = Property.objects.create(
+            property_type=request.POST.get("property_type"),
+            property_status=request.POST.get("property_status"),
+            price=request.POST.get("price"),
+            property_price=request.POST.get("property_price"),
+            max_rooms=request.POST.get("max_rooms"),
+            beds=request.POST.get("beds"),
+            baths=request.POST.get("baths"),
+            area=request.POST.get("area"),
+            premiere=request.POST.get("premiere"),
+            description=request.POST.get("description"),
+            address=request.POST.get("address"),
+            zip_code=request.POST.get("zip_code"),
+            city=request.POST.get("city"),
+            state=request.POST.get("state"),
+            country=request.POST.get("country"),
+            property_size=request.POST.get("property_size"),
+            garage=request.POST.get("garage"),
+            year_built=request.POST.get("year_built") or None,
+            is_featured=True if request.POST.get("is_featured") else False,
+            agent=request.user
+        )
 
+     
+        PropertyLocation.objects.create(
+            property=prop,
+            latitude=request.POST.get("latitude") or None,
+            longitude=request.POST.get("longitude") or None,
+            area_name=request.POST.get("area_name")
+        )
 
-@login_required
-def edit_property(request, property_id):
-    """View to edit an existing property"""
-    property_instance = get_object_or_404(Property, id=property_id)
-    
-    # Optional: Check if user is the owner
-    # if property_instance.agent != request.user:
-    #     messages.error(request, 'You do not have permission to edit this property.')
-    #     return redirect('property_list')
-    
-    if request.method == 'POST':
-        try:
-            # Get price value, use property_price if price is not provided
-            price_value = request.POST.get('price')
-            if not price_value:
-                price_value = request.POST.get('property_price')
-            
-            # Update property fields
-            property_instance.property_type = request.POST.get('property_type')
-            property_instance.property_status = request.POST.get('property_status')
-            property_instance.property_price = request.POST.get('property_price')
-            property_instance.max_rooms = request.POST.get('max_rooms')
-            property_instance.beds = request.POST.get('beds')
-            property_instance.baths = request.POST.get('baths')
-            property_instance.area = request.POST.get('area')
-            property_instance.price = price_value
-            property_instance.premiere = request.POST.get('premiere')
-            property_instance.description = request.POST.get('description', '')
-            property_instance.address = request.POST.get('address')
-            property_instance.zip_code = request.POST.get('zip_code')
-            property_instance.city = request.POST.get('city')
-            property_instance.state = request.POST.get('state')
-            property_instance.country = request.POST.get('country')
-            
-            property_instance.save()
-            
-            # Handle new image uploads
-            images = request.FILES.getlist('property_images')
-            if images:
-                for image in images:
-                    PropertyImage.objects.create(
-                        property=property_instance,
-                        image=image,
-                        is_primary=False  # Don't make new images primary automatically
-                    )
-            
-            messages.success(request, f'Property {property_instance.property_id} updated successfully!')
-            return redirect('property_details_id', property_id=property_instance.id)
-            
-        except Exception as e:
-            messages.error(request, f'Error updating property: {str(e)}')
-    
-    context = {
-        'page_title': f'Edit Property - {property_instance.property_id}',
-        'property': property_instance
-    }
-    return render(request, 'products/add_property.html', context)
+  
+        features = request.POST.getlist("features[]")
+        for f in features:
+            PropertyFeature.objects.create(property=prop, feature_name=f)
 
-
-@login_required
-def delete_property(request, property_id):
-    """View to delete a property"""
-    property_instance = get_object_or_404(Property, id=property_id)
-    
-    # Optional: Check if user is the owner
-    # if property_instance.agent != request.user:
-    #     messages.error(request, 'You do not have permission to delete this property.')
-    #     return redirect('property_list')
-    
-    if request.method == 'POST':
-        property_id_display = property_instance.property_id
-        property_instance.delete()
-        messages.success(request, f'Property {property_id_display} deleted successfully!')
-        return redirect('property_list')
-    
-    context = {
-        'page_title': f'Delete Property - {property_instance.property_id}',
-        'property': property_instance
-    }
-    return render(request, 'products/delete_property.html', context)
-
-
-@login_required
-def add_property_feature(request, property_id):
-    """View to add features to a property"""
-    property_instance = get_object_or_404(Property, id=property_id)
-    
-    if request.method == 'POST':
-        feature_name = request.POST.get('feature_name')
-        if feature_name:
-            PropertyFeature.objects.create(
-                property=property_instance,
-                feature_name=feature_name
+        images = request.FILES.getlist("images")
+        for i, img in enumerate(images):
+            PropertyImage.objects.create(
+                property=prop,
+                image=img,
+                is_primary=True if i == 0 else False
             )
-            messages.success(request, f'Feature "{feature_name}" added successfully!')
-        else:
-            messages.error(request, 'Please enter a feature name.')
-        return redirect('property_details_id', property_id=property_id)
+
+        return redirect("property_list")
+
+    return render(request, "property/property_form.html",{"page_title":"Create Property"})
+
+
+
+# update the product
+
+@permission_required('products.change_property', raise_exception=True)
+@login_required
+def property_update(request, pk):
+    prop = get_object_or_404(Property, pk=pk)
+
+
     
-    context = {
-        'property': property_instance
-    }
-    return render(request, 'products/add_feature.html', context)
+    if request.method == "POST":
+
+        fields = [
+            "property_type", "property_status", "price", "property_price",
+            "max_rooms", "beds", "baths", "area", "premiere",
+            "description", "address", "zip_code", "city",
+            "state", "country", "property_size",
+            "garage", "garage_size", "year_built"
+        ]
+
+        for field in fields:
+            setattr(prop, field, request.POST.get(field))
+
+        prop.is_featured = True if request.POST.get("is_featured") else False
+        prop.save()
+
+        location, _ = PropertyLocation.objects.get_or_create(property=prop)
+        location.latitude = request.POST.get("latitude") or None
+        location.longitude = request.POST.get("longitude") or None
+        location.area_name = request.POST.get("area_name")
+        location.save()
+
+        prop.features.all().delete()
+        features = request.POST.getlist("features[]")
+        for f in features:
+            PropertyFeature.objects.create(property=prop, feature_name=f)
+
+    
+        images = request.FILES.getlist("images")
+        for img in images:
+            PropertyImage.objects.create(property=prop, image=img)
+
+        return redirect("property_list")
+
+    return render(request, "property/property_form.html", {
+        "property": prop,
+        "location": getattr(prop, "location_details", None),
+        "features": prop.features.all(),
+        "images": prop.images.all()
+    })
+
+
+
+
+# delete the product
+@permission_required('products.delete_property', raise_exception=True)
+@login_required
+def property_delete(request, pk):
+    prop = get_object_or_404(Property, pk=pk)
+
+
+    if request.method == "POST":
+        prop.delete()
+        return redirect("property_list")
+
+    return render(request, "property/property_delete.html", {
+        "property": prop,
+        "page_title":"Delete Property",
+    })
+
+
+
+# about the product
+def about_property(request, pk):
+    property_obj = get_object_or_404(
+        Property.objects
+        .select_related("agent", "location_details")
+        .prefetch_related("images", "features"),
+        pk=pk
+    )
+
+    return render(request, "property/about_property.html", {
+        "property": property_obj,
+        "page_title":"Property Details"
+    })
+
+
+
+
+# agent

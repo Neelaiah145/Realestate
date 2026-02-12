@@ -208,9 +208,89 @@
 }
 
 
+/* FILTER BAR CONTAINER */
+.filters {
+    background: #ffffff;
+    padding: 14px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
 
+/* FLEX LAYOUT */
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap; /* wraps on small screens */
+}
 
+/* SELECT & INPUT */
+.filter-group select,
+.filter-group input[type="date"] {
+    height: 38px;
+    padding: 6px 10px;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    outline: none;
+    min-width: 150px;
+}
 
+/* DATE SEPARATOR */
+.date-sep {
+    font-size: 15px;
+    color: black;
+}
+
+/* BUTTON COMMON */
+.filter-group button,
+.btn-create-lead {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+/* APPLY / FILTER BUTTON */
+.filter-group button {
+    background-color: #2563eb;
+    color: #fff;
+}
+
+.filter-group button:hover {
+    background-color: #1e4fd6;
+}
+
+/* CREATE LEAD BUTTON */
+.btn-create-lead {
+    background-color: #16a34a;
+    color: #fff;
+    margin-left: auto; /* pushes to right side */
+}
+
+.btn-create-lead:hover {
+    background-color: #12823b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .filter-group {
+        gap: 8px;
+    }
+
+    .btn-create-lead {
+        margin-left: 0;
+        width: 100%;
+    }
+}
 
 
 
@@ -269,7 +349,7 @@
     display: block;
     font-size: 30px;
     margin-top: 6px;
-    color: #4f46e5;
+    color: #4b4a45;
 }
 
 /* ===============================
@@ -310,9 +390,8 @@
     background: #4338ca;
 }
 
-/* ===============================
-   LEADS TABLE
-================================ */
+/* leads */
+
 
 .admin-table {
     width: 100%;
@@ -365,9 +444,9 @@
     color: #92400e;
 }
 
-.status.qualified {
-    background: #dcfce7;
-    color: #166534;
+.status.intersted {
+    background: #dcfce7 !important;
+    color: #166534 !important;
 }
 
 .status.closed {
@@ -375,9 +454,7 @@
     color: #991b1b;
 }
 
-/* ===============================
-   EMPTY STATE
-================================ */
+
 
 .empty {
     text-align: center;
@@ -404,6 +481,142 @@
         justify-content: space-between;
         padding: 10px 14px;
     }
+}
+/* filters in admin */
+
+.lead-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+
+.lead-toolbar {
+    display: flex;
+    justify-content: flex-end;   
+    margin-bottom: 20px;
+    gap:20px;
+}
+
+
+.right-actions {
+    display: flex;
+    gap: 20px !important;  
+}
+
+
+.btn-sort {
+    background: #3471eb;
+    border: 1px solid #d1d5db;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+    color:#fff;
+}
+
+.btn-sort:hover {
+    background: #3570e6;
+}
+
+
+.btn-create {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.btn-create:hover {
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+}
+
+
+
+.btn-create {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.btn-create:hover {
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.3);
+}
+
+
+.sort-panel {
+    display: none;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.sort-form {
+    width: 100%;
+}
+
+.sort-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+
+.sort-select,
+.sort-input {
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.sort-select:focus,
+.sort-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.date-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-range span {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+
+.btn-apply {
+    background: #1d5fef;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-apply:hover {
+    background: #1a1de4;
 }
 
 

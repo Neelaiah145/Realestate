@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
 
-    <!-- Font Awesome -->
+    <!-- Font Awesome (IMPORTANT: must be before body) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -27,7 +27,7 @@
 
         .login-card {
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             background: #ffffff;
             padding: 32px;
             border-radius: 16px;
@@ -61,9 +61,19 @@
             margin-bottom: 16px;
         }
 
+        .form-group i.icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 16px;
+        }
+
         .form-group input {
             width: 100%;
-            padding: 14px 44px 14px 14px;
+            padding: 14px 44px;
+            padding-left: 38px;
             border-radius: 10px;
             border: 1px solid #e5e7eb;
             font-size: 14px;
@@ -82,7 +92,7 @@
             right: 14px;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #94a3b8;
+            color: #6b7280;
             font-size: 16px;
         }
 
@@ -109,40 +119,73 @@
             box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
         }
 
+        .auth-footer {
+            text-align: center;
+            margin-top: 14px;
+        }
+
         .auth-footer a {
+            font-size: 14px;
             color: #f35308;
+            text-decoration: none;
+            font-weight: 600;
         }
 
         .auth-footer a:hover {
             color: #f76c09;
+            text-decoration: underline;
+        }
+
+        .contact-admin {
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .contact-admin p {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .contact-admin a {
+            color: #4f46e5;
+            font-weight: 600;
+            text-decoration: none;
+            margin-left: 4px;
+        }
+
+        .contact-admin a:hover {
+            text-decoration: underline;
         }
 
         .form-group {
             position: relative;
-            display: flex;
-            align-items: center;
+            margin-bottom: 15px;
         }
 
-        .form-group .icon {
+        .icon {
             position: absolute;
-            left: 12px;
-            font-size: 16px;
-            color: #6b7280;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-        .form-group input {
+        input {
+            padding: 10px 10px 10px 35px;
             width: 100%;
-            padding: 12px 40px;
-            padding-left: 36px;
-            font-size: 14px;
         }
 
-        .toggle-password {
-            position: absolute;
-            right: 12px;
-            cursor: pointer;
-            color: #6b7280;
+        .otp-box {
+            display: flex;
+            gap: 10px;
         }
+
+        .otp-box input {
+            width: 50px;
+            text-align: center;
+            font-size: 18px;
+        }
+
 
         @media (max-width: 480px) {
             .login-card {
@@ -156,8 +199,7 @@
 
     <div class="login-card">
         <h2>Welcome Back</h2>
-        <p class="subtitle">Login Your Email/Password</p>
-
+        <p class="subtitle">Login with your Email & Password</p>
 
         <div class="messages">
             {% for message in messages %}
@@ -169,15 +211,26 @@
             {% csrf_token %}
 
             <div class="form-group">
-                <span class="icon">✉️</span>
+                <i class="fa-solid fa-envelope icon"></i>
                 <input type="email" name="email" placeholder="Email address" required>
             </div>
 
             <div class="form-group">
-                <span class="icon">🔑</span>
+                <i class="fa-solid fa-lock icon"></i>
                 <input type="password" name="password" id="password" placeholder="Password" required>
                 <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
             </div>
+
+            <div class="form-group">
+                <i class="fa-solid fa-phone icon"></i>
+                <input type="text" name="phone" id="phone" placeholder="Phone number" required>
+            </div>
+
+            <button type="button" id="sendOtpBtn" class="login-btn">
+                Send OTP
+            </button>
+
+
 
             <button type="submit" class="login-btn">Login</button>
 
@@ -185,25 +238,46 @@
                 <a href="#">Forgot Password?</a>
             </div>
 
+            <div class="contact-admin">
+                <p>
+                    Don’t have an account?
+                    <a href="#">Contact Admin</a>
+                </p>
+            </div>
         </form>
     </div>
 
-    <script>
-        const togglePassword = document.getElementById("togglePassword");
-        const passwordInput = document.getElementById("password");
+<script>
+document.getElementById("sendOtpBtn").onclick = function () {
+    const phone = document.getElementById("phone").value;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-        togglePassword.addEventListener("click", function () {
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                this.classList.remove("fa-eye");
-                this.classList.add("fa-eye-slash");
-            } else {
-                passwordInput.type = "password";
-                this.classList.remove("fa-eye-slash");
-                this.classList.add("fa-eye");
-            }
-        });
-    </script>
+    if (!phone || phone.length < 10) {
+        alert("Enter valid phone number");
+        return;
+    }
+
+    fetch("{% url 'send_otp' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrf
+        },
+        body: "phone=" + encodeURIComponent(phone)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // 🔑 redirect to OTP validate page
+            window.location.href = "{% url 'otp_form' %}";
+        } else {
+            alert(data.error || "OTP not sent");
+        }
+    });
+};
+</script>
+
+
 
 </body>
 

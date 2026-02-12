@@ -43,69 +43,84 @@
                     <!-- MAIN -->
                     <li class="nav-group-title">MAIN</li>
 
-                    <li>
+                    <!-- dashboards -->
+
+                    <!-- <li>
+                        {% if request.user.is_staff %}
                         <a href="{% url 'admin_dashboard' %}" class="nav-item active">
+                            {% elif request.user.role == "agent" %}
+                            <a href="{% url 'agent_dashboard' %}" class="nav-item active">
+                                {% elif request.user.role == "associate" %}
+                                <a href="{% url 'associate_dashboard' %}" class="nav-item active">
+                                    {% endif %}
+                                    <i data-lucide="layout-dashboard"></i>
+                                    <span>Dashboard</span>
+                                </a>
+                    </li> -->
+
+                    <!--permisisons dashbaords -->
+
+                    {% if request.user.is_superuser or perms.accounts.view_dashboard %}
+                    <li>
+                        <a href="{% if request.user.is_superuser %}
+                        {% url 'admin_dashboard' %}
+                        {% elif request.user.role == 'agent' %}
+                        {% url 'agent_dashboard' %}
+                        {% elif request.user.role == 'associate' %}
+                        {% url 'associate_dashboard' %}
+                        {% endif %}" class="nav-item">
                             <i data-lucide="layout-dashboard"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    {% endif %}
 
+
+
+
+
+
+                    <!-- using permisons redirect the agent is create_associate/admin is create_agent pages -->
+                    {% if request.user.is_superuser %}
                     <li>
-                        <a href="#" class="nav-item">
-                            <i data-lucide="bar-chart-3"></i>
-                            <span>Analytics</span>
+                        <a href="{% url 'admin_create_agent' %}" class="nav-item">
+                            <i data-lucide="user-plus"></i>
+                            <span>Create Agent</span>
                         </a>
                     </li>
 
-
-
-                    <li class="nav-dropdown">
-                        <button class="nav-item w-full flex items-center justify-between"
-                            onclick="toggleDropdown(this)">
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="layers"></i>
-                                <span>Propertys</span>
-                            </div>
-                            <i data-lucide="chevron-down" class="dropdown-icon transition-transform"></i>
-                        </button>
-                        <ul class="nav-dropdown-menu hidden pl-11 mt-1 space-y-1">
-                            <li>
-                                <a href="{% url 'add_property' %}"
-                                    class="block py-2 text-sm text-muted hover:text-primary">
-                                    Add Property
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'property_list' %}"
-                                    class="block py-2 text-sm text-muted hover:text-primary">
-                                    Property List
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'property_details' %}"
-                                    class="block py-2 text-sm text-muted hover:text-primary">
-                                    Property Details
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <script>
-                        function toggleDropdown(button) {
-                            const menu = button.nextElementSibling;
-                            const icon = button.querySelector('.dropdown-icon');
-
-                            menu.classList.toggle('hidden');
-                            icon.style.transform = menu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
-                        }
-                    </script>
-
+                    {% elif perms.accounts.view_create_associate %}
                     <li>
-                        <a href="#" class="nav-item">
-                            <i data-lucide="activity"></i>
-                            <span>Transactions</span>
+                        <a href="{% url 'agent_create_ass' %}" class="nav-item">
+                            <i data-lucide="user-plus"></i>
+                            <span>Create Associate</span>
                         </a>
                     </li>
+                    {% endif %}
+
+
+
+
+                    <!-- admin produts -->
+                    {% if request.user.is_superuser or perms.products.view_property %}
+                    <li>
+                        <a href="{% url 'property_list' %}" class="nav-item">
+                            <i data-lucide="building"></i>
+                            <span>Products</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+
+                    {% if request.user.is_superuser or perms.leads.view_contacts %}
+                    <li>
+                        <a href="{% url 'contacts' %}" class="nav-item">
+                            <i data-lucide="contact"></i>
+                            <span>Contacts</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
 
                     <!-- FINANCE -->
                     <li class="nav-group-title">FINANCE</li>
@@ -119,8 +134,8 @@
 
                     <li>
                         <a href="#" class="nav-item">
-                            <i data-lucide="repeat"></i>
-                            <span>Exchange</span>
+                            <i data-lucide="calendar-check"></i>
+                            <span>Tasks</span>
                         </a>
                     </li>
 
@@ -141,24 +156,54 @@
                     <!-- CUSTOMERS -->
                     <li class="nav-group-title">CUSTOMERS</li>
 
-                    <li>
+                    <!-- <li>
+                        {% if request.user.is_staff %}
                         <a href="{% url 'admin_leads' %}" class="nav-item">
-                            <i data-lucide="users"></i>
+                            {% elif request.user.role == "agent" %}
+                            <a href="{% url 'agent_leads' %}" class="nav-item">
+                                {% elif request.user.role == "associate" %}
+                                <a href="{% url 'associate_leads' %}" class="nav-item">
+                                    {% endif %}
+                                    <i data-lucide="network"></i>
+                                    <span>Leads</span>
+                                </a>
+                    </li> -->
+
+                    {% if request.user.is_superuser or perms.leads.view_leads %}
+                    <li>
+                        <a href="{% if request.user.is_superuser %}
+                        {% url 'admin_leads' %}
+                        {% elif request.user.role == 'agent' %}
+                        {% url 'agent_leads' %}
+                        {% elif request.user.role == 'associate' %}
+                        {% url 'associate_leads' %}
+                        {% endif %}" class="nav-item">
+                            <i data-lucide="trending-up"></i>
                             <span>Leads</span>
                         </a>
                     </li>
+                    {% endif %}
+
+
 
                     <li>
+                        {% if request.user.is_staff %}
                         <a href="{% url 'manage_permissions' user.id %}" class="nav-item">
-                            <i data-lucide="user-plus"></i>
-                            <span> Permissions</span>
-                        </a>
-                    </li> 
+                            {% elif request.user.role == "agent" %}
+                            <a href="#" class="nav-item">
+                                {% elif request.user.role == "associate" %}
+                                <a href="#" class="nav-item">
+
+                                    {% endif %}
+                                    <i data-lucide="user-cog"></i>
+                                    <span> Permissions</span>
+                                </a>
+                    </li>
 
                     <!-- ACCOUNT RECEIVABLES -->
                     <!-- <li class="nav-group-title">ACCOUNT RECEIVABLES</li>   -->
 
-                     <!-- <li>
+                    <!-- <li>
                         <a href="#" class="nav-item">
                             <i data-lucide="file-text"></i>
                             <span>Invoices</span>
@@ -232,13 +277,8 @@
 
                     <!-- RIGHT SIDE (UNCHANGED) -->
                     <div class="flex items-center gap-3 flex-nowrap ml-auto">
-                        <div class="relative hidden md:block"><input placeholder="Search..."
-                                class="w-64 pl-10 pr-4 py-3.5 border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            <div class="absolute left-3 top-3.5 text-gray-400"><svg class="w-5 h-5" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
+                        <div class="relative hidden md:block">
+                            <div class="absolute left-3 top-3.5 text-gray-400">
                             </div>
                         </div>
                         <div class="relative"><input type="checkbox" id="notif-toggle" class="hidden peer" />
@@ -400,5 +440,5 @@
     <script src="{% static 'dash/assets/script/cdn.jsdelivr.net/npm/xlsx%400.18.5/dist/xlsx.full.min.js' %}"></script>
     <script defer="defer" src="{% static 'dash/assets/script/app.js' %}"></script>
 </body>
-</html>
 
+</html>

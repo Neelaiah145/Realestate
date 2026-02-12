@@ -1,219 +1,129 @@
-{% extends "agent_base.html" %}
+{% extends "admin_base.html" %}
+{% block title %}Agent Dashboard{% endblock %}
+
 {% block content %}
 
 <style>
-/* ===== Layout ===== */
-.dashboard-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 24px 16px;
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    .page-header {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .dashboard-card {
+        background: #ffffff;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    }
+
+    .card-title {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 8px;
+    }
+
+    .dashboard-card h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #222;
+        text-align: right;
+    }
+
+.dashboard-card.total {
+    border-left: 5px solid #2563eb;
+    background: #dbeafea2;
+}
+.dashboard-card.new {
+    border-left: 5px solid #4f46e5;
+    background: #eef2ff;  
 }
 
-/* ===== Header ===== */
-.page-title {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 25px;
-    color: #1f2937;
+.dashboard-card.active {
+    border-left: 5px solid #22c55e;
+    background: #f0fdf4;  
 }
 
-.page-title span {
-    color: #2563eb;
+.dashboard-card.intersted {   
+    border-left: 5px solid #eae308;
+    background: #f9f6d7;   
 }
 
-/* ===== Card ===== */
-.card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 22px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-    border: 1px solid #eef2f7;
-    margin-bottom: 28px;
+.dashboard-card.pending {
+    border-left: 5px solid #f59e0b;
+    background: #fffbeb;   
 }
 
-.card h3 {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 18px;
-    color: #111827;
+.dashboard-card.due {
+    border-left: 5px solid #ef4444;
+    background: #fef2f2;   
 }
 
-/* ===== Form ===== */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+.dashboard-card.booked {
+    border-left: 5px solid #0ea5e9;
+    background: #f0f9ff;   
 }
 
-.form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 6px;
-    color: #374151;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
-}
-
-.form-group input:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
-}
-
-/* ===== Button ===== */
-.btn {
-    margin-top: 18px;
-    background: #2563eb;
-    color: #ffffff;
-    padding: 11px 22px;
-    border-radius: 10px;
-    border: none;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background: #1d4ed8;
-}
-
-/* ===== Table ===== */
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-
-.table th {
-    text-align: left;
-    padding: 12px;
-    background: #f8fafc;
-    color: #374151;
-    font-weight: 600;
-}
-
-.table td {
-    padding: 12px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.table tr:hover {
-    background: #f9fafb;
-}
-
-/* ===== Status ===== */
-.status-active {
-    color: #16a34a;
-    font-weight: 600;
-}
-
-.status-inactive {
-    color: #dc2626;
-    font-weight: 600;
-}
-
-/* ===== Action Links ===== */
-.action-link {
-    font-size: 13px;
-    color: #2563eb;
-    text-decoration: none;
-    margin-right: 10px;
-}
-
-.action-link:hover {
-    text-decoration: underline;
-}
+    @media (max-width: 768px) {
+        .dashboard-card h3 {
+            font-size: 26px;
+        }
+    }
 </style>
+
+<h2 class="page-header">
+    Welcome {{ request.user.username }} - Agent Dashboard
+</h2>
 
 <div class="dashboard-container">
 
-    <!-- HEADER -->
-    <div class="page-title">
-        Welcome <span>{{ request.user.username }}</span>
+    <div class="dashboard-card total">
+        <p class="card-title">Total Leads</p>
+        <h3>{{ leads.count|default:"0" }}</h3>
     </div>
 
-    <!-- CREATE ASSOCIATE -->
-    <div class="card">
-        <h3>Create Associate</h3>
-
-        <form method="post">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="create">
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Phone</label>
-                    <input type="text" name="phone">
-                </div>
-
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" required>
-                </div>
-            </div>
-
-            <button class="btn">Create Associate</button>
-        </form>
+    <div class="dashboard-card new">
+        <p class="card-title">New Leads</p>
+        <h3>{{ status_counts.new|default:"0" }}</h3>
     </div>
 
-    <!-- ASSOCIATES LIST -->
-    <div class="card">
-        <h3>My Associates</h3>
+    <div class="dashboard-card active">
+        <p class="card-title">Contacted Leads</p>
+        <h3>{{ status_counts.contacted|default:"0" }}</h3>
+    </div>
 
-        {% if associates %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for a in associates %}
-                <tr>
-                    <td>{{ a.username }}</td>
-                    <td>{{ a.email }}</td>
-                    <td>
-                        {% if a.is_active %}
-                            <span class="status-active">Active</span>
-                        {% else %}
-                            <span class="status-inactive">Inactive</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="#" class="action-link">
-                            {% if a.is_active %}Deactivate{% else %}Activate{% endif %}
-                        </a>
-                        |
-                        <a href="#" class="action-link">Edit</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            <p style="color:#6b7280;">No associates created yet.</p>
-        {% endif %}
+    <div class="dashboard-card intersted">
+        <p class="card-title">Intersted</p>
+        <h3>{{ status_counts.intersted|default:"0" }}</h3>
+    </div>
+
+    <div class="dashboard-card pending">
+        <p class="card-title">Closed</p>
+        <h3>{{ status_counts.closed|default:"0" }}</h3>
+    </div>
+
+
+    <div class="dashboard-card due">
+        <p class="card-title">Due Follow-ups</p>
+        <h3>{{ followups.count|default:"0" }}</h3>
+    </div>
+
+    <div class="dashboard-card booked">
+        <p class="card-title">Booked</p>
+        <h3>{{ booked_leads }}</h3>
     </div>
 
 </div>

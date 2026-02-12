@@ -16,46 +16,46 @@ class Property(models.Model):
         ('commercial', 'Commercial'),
     ]
     
-    # Basic Information
+
     property_type = models.CharField(max_length=100)
     property_status = models.CharField(max_length=20, choices=PROPERTY_STATUS_CHOICES, default='for_rent')
     property_price = models.DecimalField(max_digits=12, decimal_places=2)
     
-    # Room Details
+
     max_rooms = models.IntegerField(default=1)
     beds = models.IntegerField(default=1)
     baths = models.IntegerField(default=1)
     
-    # Property Details
+  
     area = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=12, decimal_places=2)
     premiere = models.CharField(max_length=100)
     
-    # Description
+
     description = models.TextField(blank=True, null=True)
     
-    # Location
+
     address = models.CharField(max_length=255)
     zip_code = models.CharField(max_length=20)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
     
-    # Additional Details
+
     property_id = models.CharField(max_length=50, unique=True, blank=True)
     property_size = models.CharField(max_length=50, blank=True)
-    garage = models.IntegerField(default=0)
-    garage_size = models.CharField(max_length=50, blank=True)
+    garage = models.IntegerField(default=0,blank=True)
+   
     year_built = models.IntegerField(blank=True, null=True)
     
-    # Agent
+
     agent = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='properties')
     
-    # Timestamps
+   
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-    # Featured
+  
     is_featured = models.BooleanField(default=False)
     
     class Meta:
@@ -128,3 +128,14 @@ class PropertyLocation(models.Model):
     
     def __str__(self):
         return f"Location for {self.property.property_id}"
+    
+    
+    class Meta:
+        permissions=[
+            ("view_property","View Propertys(Menu)"),
+            ("add_property","Add Property"),
+            ("change_property","Update Property"),
+            ("delete_property","Delete_Property"),
+            
+            
+        ]

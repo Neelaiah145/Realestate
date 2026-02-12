@@ -1,0 +1,313 @@
+{% extends "admin_base.html" %}
+{% block content %}
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+
+.page-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 12px;
+}
+
+.page-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}
+
+select {
+    width: 100%;
+    max-width: 420px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    background: #fff;
+}
+
+
+.permissions-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+    font-weight: 600;
+}
+
+.menu-item:hover {
+    background: #f9fafb;
+    border-color: #6366f1;
+}
+
+
+.menu-children {
+    margin-left: 36px;
+    margin-top: 10px;
+    display: none;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+
+.child-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: 260px;
+    padding: 10px 14px;
+
+    border: 1px dashed #e5e7eb;
+    border-radius: 10px;
+    background: #fafafa;
+
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.child-item:hover {
+    background: #f1f5f9;
+    border-color: #6366f1;
+}
+
+
+input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+
+.btn-primary {
+    margin-top: 28px;
+    height: 44px;
+    padding: 0 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: fit-content;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+}
+
+
+.alert {
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.alert.success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.alert.error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+
+
+@media (max-width: 992px) {
+    .menu-children {
+        margin-left: 20px;
+    }
+
+    .child-item {
+        width: 48%; 
+    }
+}
+
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 18px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    select {
+        max-width: 100%;
+    }
+
+    .menu-item {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .menu-children {
+        margin-left: 0;
+    }
+
+    .child-item {
+        width: 100%; 
+        font-size: 13px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .menu-item {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+    }
+}
+</style>
+
+<h2 class="page-title">Manage Permissions</h2>
+
+{% if messages %}
+<div class="card">
+    {% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="card">
+    <form method="GET">
+        <label>Select Agent</label>
+        <select name="agent" onchange="this.form.submit()">
+            <option value="">-- Select Agent --</option>
+            {% for agent in agents %}
+            <option value="{{ agent.id }}"
+                {% if selected_agent and agent.id == selected_agent.id %}selected{% endif %}>
+                {{ agent.username }}
+            </option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+{% if selected_agent %}
+<div class="card">
+<form method="POST">
+{% csrf_token %}
+<input type="hidden" name="agent_id" value="{{ selected_agent.id }}">
+
+<div class="permissions-menu">
+
+{% for menu in menu_config %}
+    {% for perm in permissions %}
+        {% if perm.codename == menu.menu_codename %}
+        <div class="menu-item">
+            <input type="checkbox"
+                   name="permissions"
+                   value="{{ perm.id }}"
+                   {% if menu.children %}data-menu="{{ menu.key }}"{% endif %}
+                   {% if perm.id in user_permissions %}checked{% endif %}>
+            {{ perm.name }}
+        </div>
+        {% endif %}
+    {% endfor %}
+
+    {% if menu.children %}
+    <div class="menu-children" data-children="{{ menu.key }}">
+        {% for perm in permissions %}
+            {% if perm.codename in menu.children %}
+            <label class="child-item">
+                <input type="checkbox"
+                       name="permissions"
+                       value="{{ perm.id }}"
+                       data-child="{{ menu.key }}"
+                       {% if perm.id in user_permissions %}checked{% endif %}>
+                {{ perm.name }}
+            </label>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endfor %}
+
+</div>
+
+<button type="submit" class="btn-primary">
+    Save Permissions
+</button>
+
+</form>
+</div>
+{% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll("input[data-menu]").forEach(menu => {
+        const key = menu.dataset.menu;
+        const box = document.querySelector(`[data-children="${key}"]`);
+        const kids = document.querySelectorAll(`input[data-child="${key}"]`);
+
+        function toggle() {
+            if (!box) return;
+            box.style.display = menu.checked ? "flex" : "none";
+            if (!menu.checked) kids.forEach(k => k.checked = false);
+        }
+
+        toggle();
+        menu.addEventListener("change", toggle);
+    });
+
+});
+</script>
+
+{% endblock %}
