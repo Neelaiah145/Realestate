@@ -123,7 +123,7 @@
                 {% endif %}
 
                 {% if perms.leads.can_book_lead %}
-                <a href="#" class="action-link booking-link" title="Booking">
+                <a href="{% url 'property_list' %}" class="action-link booking-link" title="Booking">
                     Booking
                 </a> |
                 {% endif %}

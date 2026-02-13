@@ -1,28 +1,182 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Login with Phone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+        }
+
+        .login-card h2 {
+            text-align: center;
+            margin-bottom: 6px;
+            font-size: 26px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 26px;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 14px 14px 40px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            font-size: 14px;
+            transition: 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+        }
+
+        .error-msg {
+            color: #dc2626;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .back-link a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<h2>Login with Phone</h2>
+<div class="login-card">
+    <h2>Login with Phone</h2>
+    <p class="subtitle">Enter your registered mobile number</p>
 
-<form method="post" action="{% url 'send_otp' %}">
     {% csrf_token %}
 
-    <input
-        type="tel"
-        name="phone"
-        placeholder="Enter phone number"
-        required
-    >
+    <div class="form-group">
+        <i class="fa-solid fa-phone"></i>
+        <input type="tel" id="phone" placeholder="Enter phone number" required>
+    </div>
 
-    <button type="submit">Send OTP</button>
+    <button type="button" id="sendOtpBtn" class="login-btn">
+        Send OTP
+    </button>
 
-    {% for message in messages %}
-        <p style="color:red">{{ message }}</p>
-    {% endfor %}
-</form>
+    <p id="error" class="error-msg"></p>
+
+    <div class="back-link">
+        <a href="{% url 'login' %}">Back to Email Login</a>
+    </div>
+</div>
+
+<script>
+document.getElementById("sendOtpBtn").onclick = function () {
+    const phone = document.getElementById("phone").value;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    if (!phone || phone.length < 10) {
+        document.getElementById("error").innerText = "Enter valid phone number";
+        return;
+    }
+
+    fetch("{% url 'send_otp' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrf
+        },
+        body: "phone=" + encodeURIComponent(phone)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = "{% url 'otp_form' %}";
+        } else {
+            document.getElementById("error").innerText = data.error;
+        }
+    });
+};
+</script>
 
 </body>
 </html>

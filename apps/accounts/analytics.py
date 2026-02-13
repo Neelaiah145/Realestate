@@ -33,7 +33,7 @@ def monthly_analytics():
         count = int(round(pct * total_leads / 100.0))
         return f"{count}"
 
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(8,5))
     plt.pie(
         sizes,
         labels=labels,

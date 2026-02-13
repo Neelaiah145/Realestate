@@ -1,0 +1,171 @@
+{% extends "admin_base.html" %}
+{% block title %}Create Associate{% endblock %}
+
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+    .card {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #374151;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: #4b5563;
+    }
+
+    .input-box {
+        position: relative;
+    }
+
+    .input-box i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        font-size: 14px;
+    }
+
+    .input-box input,
+    .input-box select {
+        width: 100%;
+        padding: 10px 12px 10px 38px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: 0.3s ease;
+    }
+
+    .input-box input:focus,
+    .input-box select:focus {
+        border-color: #6366f1;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+    }
+
+    .button-group {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(99,102,241,0.4);
+    }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="card">
+    <div class="card-title">
+        <i class="fa-solid fa-user-plus"></i> Create Associate
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Username</label>
+                <div class="input-box">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" name="username" placeholder="Enter username" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <div class="input-box">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Enter email" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <div class="input-box">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="text" name="phone" placeholder="Enter phone number">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="password" placeholder="Enter password" required>
+                </div>
+            </div>
+
+            
+
+        </div>
+
+        <div class="button-group">
+            <a href="{% url 'agent_create_ass' %}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </a>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-user-plus"></i> Create Associate
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

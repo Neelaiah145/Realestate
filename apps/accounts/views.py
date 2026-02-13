@@ -141,13 +141,25 @@ def admin_create_agent_view(request):
         "is_admin": user.is_superuser,
         "search_query": search_query,
         "role_filter": role_filter,
-        "page_title": "Agent_Creation",
+        "page_title": "Agent Creation",
     }
 
     return render(request, "admin_dash/admin_create_agent.html", context)
 
 
-
+def create_form(request):
+    user = request.user
+    if request.method == "POST" and user.is_superuser:
+        
+        User.objects.create_user(
+            username=request.POST["username"],
+            email=request.POST["email"],
+            password=request.POST["password"],
+            phone=request.POST.get("phone"),
+            role=request.POST["role"]
+            )
+        
+    return render(request,'admin_dash/create_form.html')
 
 # update/edit  agent details
 
@@ -297,8 +309,23 @@ def agent_create_ass_view(request):
     )
 
     return render(request,"agent/agent_create_ass.html",
-        {"associates": associates,'page_title':'Create_Associate'}
+        {"associates": associates,'page_title':'Create Associate'}
     )
+
+
+def create_ass_form(request):
+    user = request.user
+    if request.method == "POST" and user.role == "agent":
+        User.objects.create_user(
+            email=request.POST["email"],
+            username=request.POST["username"],
+            password=request.POST["password"],
+            role="associate",
+            parent_agent=user
+        )
+    
+    return render(request,'agent/create_ass_form.html')
+
 
 
 # @login_required

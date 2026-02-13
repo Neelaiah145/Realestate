@@ -85,7 +85,7 @@
 </style>
 
 <h2 class="page-header">
-    Welcome {{ request.user.username }} - Agent Dashboard
+    Welcome {{ request.user.username }} 
 </h2>
 
 <div class="dashboard-container">
@@ -106,23 +106,23 @@
     </div>
 
     <div class="dashboard-card intersted">
-        <p class="card-title">Intersted</p>
+        <p class="card-title">Intersted Leads</p>
         <h3>{{ status_counts.intersted|default:"0" }}</h3>
     </div>
 
     <div class="dashboard-card pending">
-        <p class="card-title">Closed</p>
+        <p class="card-title">Closed Leads</p>
         <h3>{{ status_counts.closed|default:"0" }}</h3>
     </div>
 
 
     <div class="dashboard-card due">
-        <p class="card-title">Due Follow-ups</p>
+        <p class="card-title">Due Follow-ups Leads</p>
         <h3>{{ followups.count|default:"0" }}</h3>
     </div>
 
     <div class="dashboard-card booked">
-        <p class="card-title">Booked</p>
+        <p class="card-title">Booked Leads</p>
         <h3>{{ booked_leads }}</h3>
     </div>
 

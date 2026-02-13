@@ -5,142 +5,162 @@
 {% block content %}
 
 <style>
-
-.lead-page {
-    max-width: 1100px;
-    margin: 24px auto 60px;
-}
-
-
-.lead-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-.lead-header h2 {
-    font-size: 1.6rem;
-    font-weight: 600;
-}
-.back-link {
-    background: #e5e7eb;
-    padding: 8px 14px;
-    border-radius: 6px;
-    text-decoration: none;
-    color: #111827;
-}
-.back-link:hover { background: #d1d5db; }
-
-
-.lead-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-    margin-bottom: 24px;
-}
-
-
-.section {
-    margin-bottom: 28px;
-}
-.section-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 14px;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 6px;
-}
-
-
-.info-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 22px 40px;
-}
-
-.info-block {
-    display: flex;
-    flex-direction: column;
-}
-
-.info-label {
-    font-size: 0.8rem;
-    color: #6b7280;
-    margin-bottom: 4px;
-}
-
-.info-value {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #111827;
-}
-
-
-.badge {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.badge-info { background:#e0f2fe; color:#0369a1; }
-.badge-warn { background:#fef3c7; color:#92400e; }
-
-
-.followup-box {
-
-
-    padding: 14px 18px;
-    border-radius: 8px;
-    font-weight: 600;
-    color: #92400e;
-}
-
-.update_user{
-    color:red;
-}
-.update_user1{color:black;
-    font-size:14px;}
-.history-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-}
-.history-item {
-    padding: 16px 0;
-    border-bottom: 1px solid #e5e7eb;
-}
-.history-item:last-child { border-bottom: none; }
-
-.history-top {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: #6b7280;
-    margin-bottom: 8px;
-}
-
-.history-content p {
-    margin: 4px 0;
-    color: #374151;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-    .info-layout {
-        grid-template-columns: 1fr;
+    .lead-page {
+        max-width: 1100px;
+        margin: 24px auto 60px;
     }
-}
+
+
+    .lead-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .lead-header h2 {
+        font-size: 1.6rem;
+        font-weight: 600;
+    }
+
+    .back-link {
+        background: #e5e7eb;
+        padding: 8px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #111827;
+    }
+
+    .back-link:hover {
+        background: #d1d5db;
+    }
+
+
+    .lead-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        margin-bottom: 24px;
+    }
+
+
+    .section {
+        margin-bottom: 28px;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 14px;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 6px;
+    }
+
+
+    .info-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px 40px;
+    }
+
+    .info-block {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 0.8rem;
+        color: #6b7280;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #111827;
+    }
+
+
+    .badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-info {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .badge-warn {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+
+    .followup-box {
+
+
+        padding: 14px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        color: #92400e;
+    }
+
+    .update_user {
+        color: red;
+    }
+
+    .update_user1 {
+        color: black;
+        font-size: 14px;
+    }
+
+    .history-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .history-item {
+        padding: 16px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .history-item:last-child {
+        border-bottom: none;
+    }
+
+    .history-top {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+
+    .history-content p {
+        margin: 4px 0;
+        color: #374151;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .info-layout {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
 <div class="lead-page">
 
-  
- 
+
+
 
     <div class="lead-card">
 
@@ -173,7 +193,7 @@
                     <span class="info-label">Assigned Agent</span>
                     <span class="info-value">{{ lead.assigned_agent.username }}</span>
                 </div>
-                
+
 
             </div>
         </div>
@@ -196,9 +216,10 @@
                     <span class="info-label">Budget Range</span>
                     <span class="info-value">
                         {% if lead.budget_min or lead.budget_max %}
-                            ₹{{ lead.budget_min|default:"0"|floatformat:0 }} – ₹{{ lead.budget_max|default:"0"|floatformat:0 }}
+                        ₹{{ lead.budget_min|default:"0"|floatformat:0 }} – ₹{{ lead.budget_max|default:"0"|floatformat:0
+                        }}
                         {% else %}
-                            N/A
+                        N/A
                         {% endif %}
                     </span>
                 </div>
@@ -235,69 +256,70 @@
     </div>
 
 
-<div class="history-card">
-    <div class="section-title">
-        Lead History ({{ lead.histories.count }})
-    </div>
-
-    {% for h in lead.histories.all %}
-    <div class="history-item">
-
-   
-        <div class="history-top">
-            <span>{{ h.created_at|date:"d M Y, h:i A" }}</span>
-            <span class="update_user"><span class="update_user1">Updated By - </span>{{ h.updated_by.username }}</span>
+    <div class="history-card">
+        <div class="section-title">
+            Lead History ({{ lead.histories.count }})
         </div>
 
-        <div class="history-content">
+        {% for his in lead.histories.all %}
+        <div class="history-item">
 
-     
-            <div style="margin-bottom:6px;">
-                <span class="badge badge-info">
-                    {{ h.get_status_display }}
-                </span>
 
-                {% if h.interest_level %}
-                <span class="badge badge-warn">
-                    {{ h.get_interest_level_display }}
-                </span>
-                {% endif %}
+            <div class="history-top">
+                <span>{{ his.created_at|date:"d M Y, h:i A" }}</span>
+                <span class="update_user"><span class="update_user1">Updated By - </span>{{ his.updated_by.username}}</span>
             </div>
 
-            {% if h.agent_note %}
-            <p><strong>Agent Note:</strong> {{ h.agent_note }}</p>
-            {% endif %}
+            <div class="history-content">
 
-            {% if h.client_response %}
-            <p><strong>Client Response:</strong> {{ h.client_response }}</p>
-            {% endif %}
 
-            {% if h.next_action %}
-            <p>
-                <strong>Next Action:</strong>
-                {{ h.next_action }}
-            </p>
-            {% endif %}
+                <div><strong>Status: </strong>
+                    <span>
+                        {{ his.get_status_display }}
+                    </span>
+                </div>
+                <div><strong>Intersted Level: </strong>
+                    {% if his.interest_level %}
+                    <span>
+                        {{ his.get_interest_level_display }}
+                    </span>
+                    {% endif %}
+                </div>
 
-            {% if h.follow_up_at %}
-            <p>
-                <strong>Follow-up:</strong>
-                {{ h.follow_up_at|date:"d M Y, h:i A" }}
-            </p>
-            {% endif %}
+                {% if his.agent_note %}
+                <p><strong>Agent Note:</strong> {{ his.agent_note }}</p>
+                {% endif %}
 
+                {% if his.client_response %}
+                <p><strong>Client Response:</strong> {{ his.client_response }}</p>
+                {% endif %}
+
+                {% if his.next_action %}
+                <p>
+                    <strong>Next Action:</strong>
+                    {{ his.next_action }}
+                </p>
+                {% endif %}
+
+                {% if his.follow_up_at %}
+                <p>
+                    <strong>Follow-up:</strong>
+                    {{ his.follow_up_at|date:"d M Y, h:i A" }}
+                </p>
+                {% endif %}
+
+            </div>
         </div>
+        {% empty %}
+        <p class="text-muted">No history available.</p>
+        {% endfor %}
     </div>
-    {% empty %}
-    <p class="text-muted">No history available.</p>
-    {% endfor %}
-</div>
 
 
 </div>
-   <div class="lead-header">
-   
-        <a href="{{ back_url }}" class="back-link">← Back</a>
-    </div>
+<div class="lead-header">
+
+    <a href="{{ back_url }}" class="back-link">← Back</a>
+</div>
 
 {% endblock %}

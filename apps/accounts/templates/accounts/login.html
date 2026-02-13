@@ -124,7 +124,7 @@
             margin-top: 14px;
         }
 
-        .auth-footer a {
+       .auth-footer a {
             font-size: 14px;
             color: #f35308;
             text-decoration: none;
@@ -177,7 +177,7 @@
 
         .otp-box {
             display: flex;
-            gap: 10px;
+            gap: 20px !important;
         }
 
         .otp-box input {
@@ -185,7 +185,16 @@
             text-align: center;
             font-size: 18px;
         }
-
+        .password-lin{
+            color:red;
+            text-decoration: none;
+        }
+        .otp-lin{
+            text-decoration:none;
+        }
+        .otp-lin:hover{
+            color:#4f46e5 !important;
+        }
 
         @media (max-width: 480px) {
             .login-card {
@@ -198,7 +207,7 @@
 <body>
 
     <div class="login-card">
-        <h2>Welcome Back</h2>
+        <h2>Welcome</h2>
         <p class="subtitle">Login with your Email & Password</p>
 
         <div class="messages">
@@ -221,21 +230,22 @@
                 <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
             </div>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <i class="fa-solid fa-phone icon"></i>
                 <input type="text" name="phone" id="phone" placeholder="Phone number" required>
             </div>
 
             <button type="button" id="sendOtpBtn" class="login-btn">
                 Send OTP
-            </button>
+            </button> -->
 
 
 
             <button type="submit" class="login-btn">Login</button>
 
-            <div class="auth-footer">
-                <a href="#">Forgot Password?</a>
+            <div class="auth-links">
+                <a href="#" class="password-lin">Forgot Password?</a>
+                <a href="{% url 'phone_login' %}" class="otp-lin">Login with OTP</a>
             </div>
 
             <div class="contact-admin">
@@ -248,33 +258,18 @@
     </div>
 
 <script>
-document.getElementById("sendOtpBtn").onclick = function () {
-    const phone = document.getElementById("phone").value;
-    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    if (!phone || phone.length < 10) {
-        alert("Enter valid phone number");
-        return;
-    }
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
 
-    fetch("{% url 'send_otp' %}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "X-CSRFToken": csrf
-        },
-        body: "phone=" + encodeURIComponent(phone)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            // 🔑 redirect to OTP validate page
-            window.location.href = "{% url 'otp_form' %}";
-        } else {
-            alert(data.error || "OTP not sent");
-        }
+    togglePassword.addEventListener("click", function () {
+
+        const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+        passwordInput.setAttribute("type", type);
+
+        this.classList.toggle("fa-eye");
+        this.classList.toggle("fa-eye-slash");
     });
-};
 </script>
 
 

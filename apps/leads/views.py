@@ -446,6 +446,53 @@ def edit_contact(request,id):
 
 
 
+@login_required
+def create_lead_admin(request):
+
+    if request.method == "POST":
+        Lead.objects.create(
+            name=request.POST.get("name"),
+            email=request.POST.get("email"),
+            phone=request.POST.get("phone"),
+            message=request.POST.get("message"),
+
+            assigned_agent_id=request.POST.get("assigned_agent") or None,
+            assigned_associate_id=request.POST.get("assigned_associate") or None,
+
+            status=request.POST.get("status"),
+            property_type=request.POST.get("property_type"),
+            preferred_location=request.POST.get("preferred_location"),
+
+            budget_min=request.POST.get("budget_min") or None,
+            budget_max=request.POST.get("budget_max") or None,
+
+            purchase_timeline=request.POST.get("purchase_timeline"),
+            interest_level=request.POST.get("interest_level"),
+            next_action=request.POST.get("next_action"),
+
+            client_response=request.POST.get("client_response"),
+            objections=request.POST.get("objections"),
+            agent_note=request.POST.get("agent_note"),
+
+            follow_up_at=request.POST.get("follow_up_at") or None,
+            assigned_at=timezone.now(),
+        )
+
+        messages.success(request, "Lead Created Successfully ")
+        return redirect("admin_leads")  
+
+
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+
+
+ 
+    agents = User.objects.filter(role="agent")
+
+    return render(request, "admin/create_lead.html", {
+        "agents": agents,
+        "page_title":"Admin Entry"
+    })
 
 
 

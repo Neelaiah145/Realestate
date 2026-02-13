@@ -1,10 +1,144 @@
-<form method="post" action="{% url 'verify_otp' %}">
-    {% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify OTP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <input type="text" name="otp" placeholder="Enter OTP" maxlength="6" required>
-    <button type="submit">Verify OTP</button>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
-    {% for message in messages %}
-        <p style="color:red">{{ message }}</p>
-    {% endfor %}
-</form>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .otp-card {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+            text-align: center;
+        }
+
+        .otp-card h2 {
+            margin-bottom: 8px;
+            font-size: 26px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        .otp-input {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            text-align: center;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 18px;
+            letter-spacing: 4px;
+            transition: 0.2s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            border: none;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+        }
+
+        .error-msg {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        .resend {
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .resend a {
+            color: #4f46e5;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .resend a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .otp-card {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="otp-card">
+    <h2>Verify OTP</h2>
+    <p class="subtitle">Enter the 4-digit code sent to your phone</p>
+
+    <form method="post" action="{% url 'verify_otp' %}">
+        {% csrf_token %}
+
+        <input 
+            type="text" 
+            name="otp" 
+            placeholder="------" 
+            maxlength="6" 
+            class="otp-input"
+            required
+        >
+
+        <button type="submit" class="verify-btn">
+            Verify OTP
+        </button>
+
+        {% for message in messages %}
+            <p class="error-msg">{{ message }}</p>
+        {% endfor %}
+    </form>
+
+
+</div>
+
+</body>
+</html>
