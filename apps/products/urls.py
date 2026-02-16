@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import property_list,property_create,property_update,property_delete,about_property
+from .views import property_list,property_create,property_update,property_delete,about_property,buy_property,verify_payment
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -9,4 +9,12 @@ urlpatterns = [
     path("properties/<int:pk>/update/", property_update, name="property_update"),
     path("properties/<int:pk>/delete/", property_delete, name="property_delete"),
     path("properties/<int:pk>/about/", about_property, name="about_property"),
+    path('buy_property/<int:id>/',buy_property,name="buy_product"),
+    path('verify_payment/',verify_payment,name="verify_payment")
+    
+    
+    
+    
+    
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

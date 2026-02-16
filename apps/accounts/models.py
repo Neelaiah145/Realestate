@@ -78,3 +78,15 @@ class OTP(models.Model):
     otp = models.CharField(max_length=6)
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+    

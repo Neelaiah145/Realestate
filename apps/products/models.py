@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from apps.accounts.models import User
 
 class Property(models.Model):
     PROPERTY_STATUS_CHOICES = [
@@ -139,3 +140,23 @@ class PropertyLocation(models.Model):
             
             
         ]
+        
+
+
+class Payments(models.Model):
+    STATUS_CHOICES = (
+        ('created', 'Created'),
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+    )
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Property, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    razorpay_order_id = models.CharField(max_length=100, null=True, blank=True)
+    razorpay_payment_id = models.CharField(max_length=100, null=True, blank=True)
+
+    status = models.CharField(max_length=20,choices=STATUS_CHOICES,default="created")
+
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -252,11 +252,18 @@ font-size: 24px !important;
                     {% if perms.products.change_property %}
                 <a href="{% url 'property_update' p.id %}" class="edit">Edit</a>
                 {% endif %}
-
+                    
                    {% if perms.products.delete_property %}
                 <a href="{% url 'property_delete' p.id %}" class="delete">Delete</a>
                 {% endif %}
+
+              
+
+    <a href="{% url 'buy_product' p.id %}">Buy</a>
+
+      
             </td>
+           
         </tr>
         {% empty %}
         <tr>

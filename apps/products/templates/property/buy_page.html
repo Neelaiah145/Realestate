@@ -1,0 +1,196 @@
+{% extends "admin_base.html" %}
+{% block content %}
+{% load static %}
+
+<style>
+    .payment-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        min-height: 80vh;
+        background: #f5f7fb;
+    }
+
+    .payment-card {
+        width: 100%;
+        max-width: 550px;   /* Auto fit */
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        font-family: 'Segoe UI', sans-serif;
+        transition: 0.3s ease;
+    }
+
+    .payment-card h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #222;
+        font-size: 22px;
+    }
+
+    .info-row {
+        margin-bottom: 14px;
+        font-size: 15px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .info-row strong {
+        color: #444;
+    }
+
+    hr {
+        margin: 20px 0;
+        border: none;
+        border-top: 1px solid #eee;
+    }
+
+    .pay-btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #0d6efd, #0056d2);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .pay-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+
+    .back-btn {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+        text-decoration: none;
+        color: #0d6efd;
+        font-size: 14px;
+    }
+
+    .back-btn:hover {
+        text-decoration: underline;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 480px) {
+        .payment-card {
+            padding: 20px;
+        }
+
+        .payment-card h2 {
+            font-size: 18px;
+        }
+
+        .info-row {
+            font-size: 14px;
+        }
+    }
+</style>
+
+
+<div class="payment-container">
+    <div class="payment-card">
+
+        <h2>Selected Property</h2>
+
+        <div class="info-row">
+            <strong>User:</strong> {{ request.user.username }}
+        </div>
+
+        <hr>
+
+
+
+
+
+
+        <div class="info-row">
+            <strong>Property Type:</strong> {{ pro.property_type|title }}
+        </div>
+        <div class="info-row">
+            <strong>ID:</strong> {{ pro.property_id  }}
+        </div>
+
+        <div class="info-row">
+            <strong>Price:</strong> ₹{{ pro.price }}
+        </div>
+
+        <div class="info-row">
+            <strong>Created:</strong> {{ pro.created_at }}
+        </div>
+
+        <hr>
+
+        <button id="rzp-button" class="pay-btn">
+            Proceed to Payment
+        </button>
+
+<a href="{% url 'property_list' %}" class="back-btn">← Back </a>
+
+
+
+
+
+
+
+
+    </div>
+</div>
+
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    var options = {
+        "key": "{{ razorpay_key }}",  
+        "amount": "{{ payment.amount }}",  
+        "currency": "INR",
+        "name": "Neelaiah Payments",
+        "description": "Property Payment",
+        "order_id": "{{ payment.razorpay_order_id }}",
+
+        "handler": function (response) {
+
+            var form = document.createElement("form");
+            form.method = "POST";
+            form.action = "{% url 'verify_payment' %}";
+
+            var csrf = document.createElement("input");
+            csrf.type = "hidden";
+            csrf.name = "csrfmiddlewaretoken";
+            csrf.value = "{{ csrf_token }}";
+            form.appendChild(csrf);
+
+            for (var key in response) {
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = response[key];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+
+    document.getElementById("rzp-button").onclick = function(e) {
+        rzp1.open();   
+        e.preventDefault();
+    };
+</script>
+
+
+
+{% endblock %}

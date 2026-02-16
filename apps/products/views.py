@@ -1,8 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Property,PropertyImage,PropertyFeature,PropertyLocation
+from .models import Property,PropertyImage,PropertyFeature,PropertyLocation,Payments
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import permission_required
+import razorpay
+from django.conf import settings
+from django.http import HttpResponse
+from django.db import transaction
 
 
 
@@ -192,3 +196,83 @@ def about_property(request, pk):
 
 
 # agent
+
+
+
+
+
+
+# payments
+
+
+
+
+
+
+
+def buy_property(request, id):
+    user = request.user
+    product = Property.objects.get(id=id)
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    amount = int(product.price * 100) 
+    payment = Payments.objects.create(
+        user=request.user,
+        product=product,
+        price=amount,
+        status='created'
+    )
+
+    order = client.order.create({
+        "amount": amount,
+        "currency": "INR",
+        "payment_capture": 1
+    })
+
+    payment.razorpay_order_id = order['id']
+    payment.save()
+
+    return render(request, 'property/buy_page.html', {
+        "pro": product,
+        "payment": payment,
+        "razorpay_key": settings.RAZORPAY_KEY_ID
+    })
+    
+    
+
+def verify_payment(request):
+
+    razorpay_order_id = request.POST.get('razorpay_order_id')
+    razorpay_payment_id = request.POST.get('razorpay_payment_id')
+    razorpay_signature = request.POST.get('razorpay_signature')
+
+    payment = Payments.objects.get(razorpay_order_id=razorpay_order_id)
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    data = {
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_payment_id': razorpay_payment_id,
+        'razorpay_signature': razorpay_signature
+    }
+
+    try:
+ 
+        client.utility.verify_payment_signature(data)
+
+        with transaction.atomic():
+            payment.razorpay_payment_id = razorpay_payment_id
+            payment.razorpay_signature = razorpay_signature
+            payment.status = 'success'
+            payment.save()
+            product = payment.product
+            product.stock -= 1
+            product.save()
+
+        return HttpResponse("Payment Successful")
+
+    except:
+        payment.status = 'failed'
+        payment.save()
+        return HttpResponse("Payment Failed")

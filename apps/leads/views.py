@@ -17,6 +17,8 @@ from django.http import Http404
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Permission
+from django.conf import settings
+from django.core.mail import send_mail
 
 from django.urls import reverse
 
@@ -243,10 +245,37 @@ def submit_lead(request):
             assigned_agent=agent,
             assigned_at=now()
         )
-
-        return redirect("lead_success")
+        if agent:
+            send_lead_email(agent, lead)
+            return redirect("lead_success")
 
     return render(request, "public/submit_lead.html", {"page_title": "Submit Lead"})
+
+
+url = "http://127.0.0.1:8000/accounts"
+
+
+def send_lead_email(agent, lead):
+    send_mail(
+"New Lead Generated",
+    f"""Hello {agent.username},
+    You have received a new lead.
+
+    Lead Details:
+    Name: {lead.name}
+    Phone: {lead.phone}
+    Email: {lead.email}
+
+    Please contact the customer as soon as possible and update the lead status in the CRM after your follow-up.
+    Make sure to record all communication details properly. {url}
+
+    Best Regards,
+    ChinaNeelaiah Rusum.
+    """,
+        settings.EMAIL_HOST_USER,
+        [agent.email],
+        fail_silently=False,
+    )
 
 
 # lead success message
